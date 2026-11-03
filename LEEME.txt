@@ -1,0 +1,32 @@
+MÁQUINA DE GALTON · VERSIÓN 5
+================================
+
+USO
+- Abrir index.html en Chrome o Edge para utilizarlo sin servidor.
+- En GitHub Pages, reemplazar index.html en la raíz del repositorio.
+- Se puede usar sin Internet con el motor de simulación integrado.
+- Si se carga Matter.js 0.20.0 desde CDN, el simulador puede utilizar ese motor.
+
+CAMBIOS
+1) Separación horizontal entre centros de obstáculos: 30 a 180 px.
+   Para matrices amplias se aplica zoom de visualización, sin cambiar las distancias físicas.
+2) Fricción de contacto, fricción estática y resistencia del aire de las bolitas: cero.
+   La restitución se mantiene ajustable de 0 a 0,35.
+3) Altura de caída: de 30 a 320 px por encima de la primera fila.
+4) Dispersión aleatoria horizontal: ±Δx, 0 a 120 px.
+5) Dispersión aleatoria vertical: ±Δy, 0 a 120 px, con máximo adaptado
+   a la altura para evitar lanzar bolitas superpuestas al primer obstáculo.
+6) Controles geométricos en orden: diámetro bolitas, diámetro obstáculos,
+   separación obstáculos, altura caída, Δx y Δy.
+
+FÍSICA
+- Las bolitas atraviesan a las demás; solo chocan con paredes y obstáculos.
+- Fricción nula no equivale a ausencia de colisiones o a coincidencia con
+  la binomial teórica.
+- Un desplazamiento inicial horizontal minúsculo rompe el equilibrio exacto
+  de una bola centrada sobre la cabeza de un obstáculo.
+
+VALIDACIÓN
+- Sintaxis JavaScript revisada.
+- Probada en Chromium sin descargar Matter.js, incluyendo opciones extremas.
+- Corridas de 50 y 30 bolitas se completaron sin errores de JavaScript.
