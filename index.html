@@ -6,25 +6,99 @@
   <meta name="theme-color" content="#0a1020" />
   <title>Máquina de Galton | Simulador interactivo</title>
   <style>
-    :root {color-scheme:dark;--bg:#0a1020;--panel:#111b30;--panel2:#17243c;--line:#2a3b59;--text:#e9f0fb;--muted:#9eacc4;--cyan:#64d8ed;--gold:#ffca72;--pink:#f08bbc}
+    :root {color-scheme:dark;--bg:#0a1020;--panel:#111b30;--line:#2a3b59;--text:#e9f0fb;--muted:#9eacc4;--cyan:#64d8ed;--gold:#ffca72;--pink:#f08bbc;--ok:#81d49a;--warn:#ffca72}
     *{box-sizing:border-box} html{min-height:100%} body{margin:0;background:radial-gradient(ellipse at 50% -20%,#21395c 0%,#0a1020 57%);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text)}
-    .app{max-width:1370px;margin:auto;padding:24px clamp(14px,3vw,38px) 30px}
-    .header-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.header-actions .btn{padding:11px 17px;min-width:124px}.header-actions .btn.primary{min-width:156px}.header-actions .btn:disabled{opacity:.45}.header-actions .header-badge{white-space:nowrap}
-    @media(max-width:700px){.header-actions{width:100%}.header-actions .btn{flex:1}.header-actions .header-badge{display:none}}
-    header{display:flex;justify-content:space-between;gap:15px;align-items:end;margin-bottom:20px;flex-wrap:wrap} .eyebrow{color:var(--cyan);font-size:11px;letter-spacing:.22em;font-weight:750;text-transform:uppercase;margin:0 0 6px}h1{font-size:clamp(26px,3.1vw,40px);letter-spacing:-.045em;line-height:1.12;margin:0}header p:last-child{margin:9px 0 0;color:var(--muted);font-size:14px}.header-badge{border:1px solid #35536d;border-radius:100px;padding:10px 14px;color:#bfdae9;background:#12243a;font-size:12px;font-weight:600}
-    .layout{display:grid;grid-template-columns:minmax(0,1fr) 314px;gap:16px;align-items:start}.board-card{background:linear-gradient(160deg,#101b30,#0b1427);border:1px solid #2b3a54;border-radius:18px;overflow:hidden;min-width:0;box-shadow:0 16px 50px #02061350}.canvas-box{position:relative;padding:6px 8px 0}canvas{display:block;width:100%;height:auto;aspect-ratio:1000 / 830;touch-action:pan-y}.canvas-note{position:absolute;left:24px;top:19px;letter-spacing:.1em;text-transform:uppercase;font-size:10px;color:#7f9ab7;pointer-events:none}.legend{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:12px 20px 16px;border-top:1px solid #24344e;color:#a7b6ce;font-size:12px}.legend-key{display:flex;gap:17px;flex-wrap:wrap}.key{display:inline-flex;align-items:center;gap:7px}.dot{display:inline-block;height:9px;width:9px;border-radius:50%;background:var(--cyan)}.line{display:inline-block;width:22px;border-top:2px dashed var(--gold)}
-    aside{display:flex;flex-direction:column;gap:14px}.panel{background:linear-gradient(165deg,#152139,#111b30);border:1px solid #2d3c56;border-radius:16px;padding:19px}.panel h2{font-size:14px;letter-spacing:.02em;margin:0 0 20px}.field{margin-bottom:18px}.field-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:12px}.field label{color:#cbd8e9;font-size:12px;font-weight:650}.value{font-size:15px;font-weight:750;color:var(--cyan);font-variant-numeric:tabular-nums}.field input[type=range]{width:100%;accent-color:#68d9ee;cursor:pointer}.range-ends{display:flex;justify-content:space-between;color:#71859f;font-size:11px;margin-top:3px}.inputrow{display:flex;gap:8px;align-items:center}.number{width:104px;padding:9px 10px;border:1px solid #3a516c;border-radius:8px;background:#0d182b;color:white;font:inherit;font-size:14px;font-variant-numeric:tabular-nums}.btns{display:grid;grid-template-columns:1fr 1fr;gap:9px}.btn{border:1px solid #3b5271;background:#1c304d;color:#e4eefb;border-radius:10px;padding:11px 9px;font-weight:750;font-size:13px;cursor:pointer;transition:background .12s,transform .12s}.btn:hover{background:#294362}.btn:active{transform:scale(.98)}.btn.primary{background:#64d8ed;color:#081522;border-color:#64d8ed}.btn.primary:hover{background:#98e7f4}.btn.secondary{grid-column:1/-1;background:transparent}.btn:disabled{opacity:.5;cursor:default}.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.stat{padding:11px;border:1px solid #2c405d;background:#101c31;border-radius:10px}.stat small{display:block;color:#92a6bf;font-size:11px;margin-bottom:5px}.stat strong{font-size:22px;letter-spacing:-.045em;font-variant-numeric:tabular-nums}.status{display:flex;align-items:center;gap:7px;color:#9fb0c5;font-size:12px;margin-top:16px;min-height:18px}.status-dot{height:7px;width:7px;background:#7691ac;border-radius:50%}.status-dot.playing{background:#64d8ed;box-shadow:0 0 9px #64d8ed}.toggle{display:flex;align-items:center;gap:9px;margin-top:14px;color:#b6c7da;font-size:12px;cursor:pointer}.toggle input{accent-color:#64d8ed}.progress-track{height:5px;border-radius:5px;background:#293b56;margin-top:11px;overflow:hidden}.progress-fill{height:100%;width:0%;background:#64d8ed;border-radius:5px;transition:width .1s}.explain{color:#a6b5cd;font-size:12px;line-height:1.65;margin:0}.formula{color:#ffcd82;font-size:14px;margin:12px 0 3px;word-break:break-word}.note{color:#8396b1;font-size:11px;line-height:1.5;margin:8px 0 0}.footer{color:#71839b;font-size:11px;padding:15px 3px 0;line-height:1.6}
-    @media(max-width:900px){.layout{grid-template-columns:1fr}aside{display:grid;grid-template-columns:1fr 1fr;align-items:start}.panel:first-child{grid-row:span 2}}@media(max-width:600px){.app{padding:16px 10px 24px}header{padding:0 4px;margin-bottom:15px}.header-badge{display:none}.board-card{border-radius:12px}.canvas-box{padding:2px 0 0}.canvas-note{left:11px;top:11px;font-size:8px}.legend{padding:10px;font-size:10px}.legend-key{gap:10px}aside{display:flex}.panel{padding:16px}}
+    .app{max-width:1600px;margin:auto;padding:24px clamp(14px,3vw,38px) 30px}
+    header{display:flex;justify-content:space-between;gap:15px;align-items:end;margin-bottom:20px;flex-wrap:wrap}
+    .eyebrow{color:var(--cyan);font-size:11px;letter-spacing:.22em;font-weight:750;text-transform:uppercase;margin:0 0 6px}
+    h1{font-size:clamp(26px,3.1vw,40px);letter-spacing:-.045em;line-height:1.12;margin:0}
+    header p:last-child{margin:9px 0 0;color:var(--muted);font-size:14px}
+    .header-badge{border:1px solid #35536d;border-radius:100px;padding:10px 14px;color:#bfdae9;background:#12243a;font-size:12px;font-weight:600;white-space:nowrap}
+    .header-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+    .header-actions .btn{padding:11px 17px;min-width:124px}.header-actions .btn.primary{min-width:170px}.header-actions .btn:disabled{opacity:.45}
+    .layout{display:grid;grid-template-columns:260px minmax(0,1fr) 330px;gap:16px;align-items:start}
+    .leftbar, aside{display:flex;flex-direction:column;gap:14px}
+    .board-card{background:linear-gradient(160deg,#101b30,#0b1427);border:1px solid #2b3a54;border-radius:18px;overflow:hidden;min-width:0;box-shadow:0 16px 50px #02061350}
+    .canvas-box{position:relative;padding:6px 8px 0}
+    canvas{display:block;width:100%;height:auto;aspect-ratio:1000 / 830;touch-action:pan-y}
+    .canvas-note{position:absolute;left:24px;top:19px;letter-spacing:.1em;text-transform:uppercase;font-size:10px;color:#7f9ab7;pointer-events:none}
+    .legend{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:12px 20px 16px;border-top:1px solid #24344e;color:#a7b6ce;font-size:12px}
+    .legend-key{display:flex;gap:17px;flex-wrap:wrap}
+    .key{display:inline-flex;align-items:center;gap:7px}.dot{display:inline-block;height:9px;width:9px;border-radius:50%;background:var(--cyan)}.line{display:inline-block;width:22px;border-top:2px dashed var(--gold)}.pathkey{display:inline-block;width:22px;border-top:2px solid rgba(123,232,238,.6)}
+    .panel{background:linear-gradient(165deg,#152139,#111b30);border:1px solid #2d3c56;border-radius:16px;padding:19px}
+    .panel h2{font-size:14px;letter-spacing:.02em;margin:0 0 20px}
+    .field{margin-bottom:18px}.field-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:12px}.field label{color:#cbd8e9;font-size:12px;font-weight:650}.value{font-size:15px;font-weight:750;color:var(--cyan);font-variant-numeric:tabular-nums}.field input[type=range]{width:100%;accent-color:#68d9ee;cursor:pointer}.range-ends{display:flex;justify-content:space-between;color:#71859f;font-size:11px;margin-top:3px}.number{width:104px;padding:9px 10px;border:1px solid #3a516c;border-radius:8px;background:#0d182b;color:white;font:inherit;font-size:14px;font-variant-numeric:tabular-nums}
+    .btn{border:1px solid #3b5271;background:#1c304d;color:#e4eefb;border-radius:10px;padding:11px 9px;font-weight:750;font-size:13px;cursor:pointer;transition:background .12s,transform .12s}.btn:hover{background:#294362}.btn:active{transform:scale(.98)}.btn.primary{background:#64d8ed;color:#081522;border-color:#64d8ed}.btn.primary:hover{background:#98e7f4}.btn.secondary{background:transparent}.btn:disabled{opacity:.5;cursor:default}
+    .btn.small{padding:7px 9px;font-size:12px;border-radius:8px}
+    .btn-row{display:grid;grid-template-columns:1fr;gap:9px}
+    .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.stat{padding:11px;border:1px solid #2c405d;background:#101c31;border-radius:10px}.stat small{display:block;color:#92a6bf;font-size:11px;margin-bottom:5px}.stat strong{font-size:22px;letter-spacing:-.045em;font-variant-numeric:tabular-nums}
+    .status{display:flex;align-items:center;gap:7px;color:#9fb0c5;font-size:12px;margin-top:16px;min-height:18px}.status-dot{height:7px;width:7px;background:#7691ac;border-radius:50%}.status-dot.playing{background:#64d8ed;box-shadow:0 0 9px #64d8ed}
+    .toggle{display:flex;align-items:center;gap:9px;margin-top:12px;color:#b6c7da;font-size:12px;cursor:pointer}.toggle input{accent-color:#64d8ed}
+    .progress-track{height:5px;border-radius:5px;background:#293b56;margin-top:11px;overflow:hidden}.progress-fill{height:100%;width:0%;background:#64d8ed;border-radius:5px;transition:width .1s}
+    .explain{color:#a6b5cd;font-size:12px;line-height:1.65;margin:0}.formula{color:#ffcd82;font-size:14px;margin:12px 0 3px;word-break:break-word}.note{color:#8396b1;font-size:11px;line-height:1.5;margin:8px 0 0}
+    .chi-grid{display:grid;grid-template-columns:1fr;gap:9px}
+    .chi-item{padding:11px;border:1px solid #2c405d;background:#101c31;border-radius:10px}
+    .chi-item small{display:block;color:#92a6bf;font-size:11px;margin-bottom:5px}.chi-item strong{font-size:22px;letter-spacing:-.045em;font-variant-numeric:tabular-nums}
+    .pill{display:inline-block;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:700;border:1px solid #445b7a;background:#102036;color:#dbe7f6}
+    .pill.ok{border-color:#356b47;color:#b9edc6;background:#0f2215}.pill.warn{border-color:#8b6d20;color:#ffe7a2;background:#241a08}
+    .saved-list{display:flex;flex-direction:column;gap:9px;max-height:370px;overflow:auto;padding-right:4px}
+    .saved-item{padding:10px;border:1px solid #2c405d;background:#101c31;border-radius:10px}
+    .saved-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.saved-name{font-size:13px;font-weight:700;color:#ebf2fc}.saved-meta{font-size:11px;color:#93a7bf;margin-top:2px;line-height:1.4}.saved-actions{display:flex;gap:6px;margin-top:8px}
+    .empty-state{padding:12px;border:1px dashed #36506f;border-radius:10px;color:#8ea5c1;font-size:12px;line-height:1.5;background:#0e182b}
+    .footer{color:#71839b;font-size:11px;padding:15px 3px 0;line-height:1.6}
+    @media(max-width:1200px){.layout{grid-template-columns:240px minmax(0,1fr) 320px}}
+    @media(max-width:980px){.layout{grid-template-columns:1fr}.leftbar,aside{display:grid;grid-template-columns:1fr 1fr;align-items:start}.panel:first-child{grid-row:auto}}
+    @media(max-width:700px){.header-actions{width:100%}.header-actions .btn{flex:1}.header-badge{display:none}}
+    @media(max-width:600px){.app{padding:16px 10px 24px}header{padding:0 4px;margin-bottom:15px}.board-card{border-radius:12px}.canvas-box{padding:2px 0 0}.canvas-note{left:11px;top:11px;font-size:8px}.legend{padding:10px;font-size:10px}.legend-key{gap:10px}.leftbar,aside{display:flex}.panel{padding:16px}}
   </style>
 </head>
 <body>
   <main class="app">
-    <header><div><p class="eyebrow">Laboratorio de probabilidad</p><h1>Máquina de Galton</h1><p>Explora colisiones físicas independientes y su distribución.</p></div><div class="header-actions"><button class="btn primary" id="start" type="button" title="Iniciar o reiniciar toda la simulación">▶ Iniciar</button><button class="btn" id="pause" type="button" disabled>Ⅱ Pausar</button><span class="header-badge">Funciona sin conexión · v5</span></div></header>
+    <header>
+      <div>
+        <p class="eyebrow">Laboratorio de probabilidad</p>
+        <h1>Máquina de Galton</h1>
+        <p>Explora colisiones físicas independientes y evalúa qué tan cerca estás de la binomial teórica.</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn primary" id="start" type="button" title="Iniciar o reiniciar toda la simulación">▶ Iniciar</button>
+        <button class="btn" id="pause" type="button" disabled>Ⅱ Pausar</button>
+        <span class="header-badge">Funciona sin conexión · v6</span>
+      </div>
+    </header>
+
     <div class="layout">
+      <section class="leftbar">
+        <section class="panel">
+          <h2>Bondad de ajuste χ²</h2>
+          <div class="chi-grid">
+            <div class="chi-item"><small>Estadístico χ²</small><strong id="chi2Value">—</strong></div>
+            <div class="chi-item"><small>Grados de libertad</small><strong id="chi2Df">—</strong></div>
+            <div class="chi-item"><small>Valor p</small><strong id="chi2P">—</strong></div>
+            <div class="chi-item"><small>Validez aproximada</small><span class="pill" id="chi2Validity">Esperando datos</span><p class="note" id="chi2Note">Se calcula usando los bins visibles del histograma. Si algún valor esperado es menor que 5, la aproximación del test es débil.</p></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Parámetros guardados</h2>
+          <div class="btn-row" style="margin-bottom:12px;"><button class="btn secondary" id="savePreset" type="button">💾 Guardar parámetros</button></div>
+          <div id="savedList" class="saved-list"></div>
+          <div id="savedEmpty" class="empty-state">Aún no hay parámetros guardados. Cuando una corrida te resulte buena, usa “Guardar parámetros”.</div>
+        </section>
+      </section>
+
       <section class="board-card" aria-label="Simulación de la máquina de Galton">
         <div class="canvas-box"><span class="canvas-note">Trayectorias y distribución</span><canvas id="board" width="1000" height="830" aria-label="Bolitas cayendo y chocando con una matriz triangular de obstáculos"></canvas></div>
-        <div class="legend"><div class="legend-key"><span class="key"><i class="dot"></i> Bolitas observadas</span><span class="key"><i class="line"></i> Binomial teórica</span></div><span id="legendLabel">0 de 500 bolitas registradas</span></div>
+        <div class="legend">
+          <div class="legend-key">
+            <span class="key"><i class="dot"></i> Bolitas observadas</span>
+            <span class="key"><i class="line"></i> Binomial teórica</span>
+            <span class="key"><i class="pathkey"></i> Trayectorias acumuladas</span>
+          </div>
+          <span id="legendLabel">0 de 500 bolitas registradas</span>
+        </div>
       </section>
+
       <aside>
         <section class="panel"><h2>Configuración</h2>
           <div class="field"><div class="field-head"><label for="balls">Cantidad de bolitas</label><input class="number" id="balls" type="number" min="10" max="5000" step="10" value="500" /></div><input id="ballsRange" type="range" min="10" max="5000" step="10" value="500"/><div class="range-ends"><span>10</span><span>5.000</span></div></div>
@@ -36,46 +110,37 @@
           <div class="field"><div class="field-head"><label for="spawnDx">Dispersión de salida (Δx)</label><span class="value" id="spawnDxValue">±8 px</span></div><input id="spawnDx" type="range" min="0" max="120" step="1" value="8"/><div class="range-ends"><span>0 px (centro)</span><span>±120 px</span></div><p class="note">La posición inicial se elige al azar, uniformemente entre −Δx y +Δx respecto del centro. Modificarla reinicia la corrida.</p></div>
           <div class="field"><div class="field-head"><label for="spawnDy">Dispersión vertical (Δy)</label><span class="value" id="spawnDyValue">±6 px</span></div><input id="spawnDy" type="range" min="0" max="120" step="1" value="6"/><div class="range-ends"><span>0 px</span><span id="spawnDyMaxLabel">±120 px</span></div><p class="note">Cada bolita aparece con una variación de altura uniforme entre −Δy y +Δy. Se limita automáticamente para que ninguna nazca dentro del primer obstáculo.</p></div>
           <div class="field"><div class="field-head"><label for="binWidth">Ancho de bins del histograma</label><span class="value" id="binWidthValue">1</span></div><input id="binWidth" type="range" min="1" max="5" step="1" value="1"/><div class="range-ends"><span>1 compartimento</span><span id="binWidthMaxLabel">5 compartimentos</span></div></div>
-          <div class="field"><div class="field-head"><label for="bounce">Rebote (restitución)</label><span class="value" id="bounceValue">0,02</span></div><input id="bounce" type="range" min="0" max="0.35" step="0.01" value="0.02"/><div class="range-ends"><span>0: sin rebote normal</span><span>0,35: mayor rebote</span></div><p class="note">Con e = 0 el choque es completamente inelástico en la dirección normal; la bolita todavía puede deslizarse lateralmente.</p></div>
+          <div class="field"><div class="field-head"><label for="bounce">Coeficiente de restitución</label><span class="value" id="bounceValue">0,02</span></div><input id="bounce" type="range" min="0" max="0.35" step="0.01" value="0.02"/><div class="range-ends"><span>0 (muy inelástico)</span><span>0,35</span></div><p class="note">Cuánto rebota la bolita al chocar con un obstáculo o una pared. Valores bajos absorben más energía normal.</p></div>
           <div class="field"><div class="field-head"><label for="speed">Velocidad</label><span class="value" id="speedValue">1,0×</span></div><input id="speed" type="range" min="0.25" max="4" step="0.25" value="1"/><div class="range-ends"><span>0,25×</span><span>4×</span></div></div>
           <label class="toggle"><input type="checkbox" id="theory" checked /> Mostrar curva binomial teórica</label>
+          <label class="toggle"><input type="checkbox" id="drawTrails" /> Dibujar trayectorias acumuladas</label>
           <div class="status"><span class="status-dot" id="statusDot"></span><span id="statusText">Preparado para comenzar</span></div><div class="progress-track"><div class="progress-fill" id="progress"></div></div><p id="engineLabel" class="note" aria-live="polite">Motor: integrado (sin conexión)</p>
         </section>
         <section class="panel"><h2>Resultados en tiempo real</h2><div class="stat-grid"><div class="stat"><small>Bolitas recibidas</small><strong id="arrived">0</strong></div><div class="stat"><small>En movimiento</small><strong id="moving">0</strong></div><div class="stat"><small>Compartimentos</small><strong id="pockets">11</strong></div><div class="stat"><small>Media observada</small><strong id="mean">—</strong></div></div></section>
-        <section class="panel"><h2>¿Por qué se forma una campana?</h2><p class="explain">En un modelo ideal, cada nivel permite desviarse a la izquierda o derecha con igual probabilidad. Después de <strong id="levelsInline">10</strong> decisiones, la posición final sigue una distribución binomial:</p><div class="formula">P(X = k) = C(n, k) / 2<sup>n</sup></div><p class="note">La curva es una referencia estadística ideal. Los choques se calculan con Matter.js si está disponible, o con el motor integrado de cuerpos independientes. La distribución física no tiene por qué coincidir exactamente con la binomial ideal. Agrupar bins solo cambia la representación del histograma.</p></section>
+        <section class="panel"><h2>¿Por qué se forma una campana?</h2><p class="explain">En un modelo ideal, cada nivel permite desviarse a la izquierda o derecha con igual probabilidad. Después de <strong id="levelsInline">10</strong> decisiones, la posición final sigue una distribución binomial:</p><div class="formula">P(X = k) = C(n, k) / 2<sup>n</sup></div><p class="note">La curva es una referencia estadística ideal. Los choques se calculan con Matter.js si está disponible, o con el motor integrado de cuerpos independientes. La distribución física no tiene por qué coincidir exactamente con la binomial ideal. Agrupar bins solo cambia la representación del histograma y del test χ².</p></section>
       </aside>
     </div>
-    <div class="footer">Las bolitas se atraviesan entre sí: solo chocan con obstáculos y paredes. Cambiar tamaño, separación, altura, Δx, Δy o niveles reinicia la simulación y sus resultados. El botón superior permite iniciar una nueva corrida en cualquier momento. El ancho de bins solo modifica el histograma. Funciona sin Internet mediante el motor integrado y utiliza Matter.js cuando está disponible.</div>
+
+    <div class="footer">Las bolitas se atraviesan entre sí: solo chocan con obstáculos y paredes. Cambiar tamaño, separación, altura, Δx, Δy o niveles reinicia la simulación y sus resultados. El botón superior permite iniciar una nueva corrida en cualquier momento. El ancho de bins solo modifica el histograma y el χ². Funciona sin Internet mediante el motor integrado y utiliza Matter.js cuando está disponible.</div>
   </main>
-  <!-- El motor integrado funciona sin conexión. Matter.js se utiliza si se puede descargar. -->
+
   <script>
   (() => {
     'use strict';
 
-    // Motor físico integrado de respaldo. Implementa solo cuerpos circulares dinámicos,
-    // círculos/rectángulos estáticos y respuesta impulsiva a la colisión.
-    // No es Matter.js; se activa únicamente cuando la librería externa no está disponible.
     function makeOfflineEngine() {
       const Bodies = {
         circle(x, y, r, options = {}) {
-          return {
-            shape: 'circle', position: { x, y }, radius: r,
-            velocity: { x: 0, y: 0 }, ...options
-          };
+          return { shape: 'circle', position: { x, y }, radius: r, velocity: { x: 0, y: 0 }, ...options };
         },
         rectangle(x, y, width, height, options = {}) {
-          return {
-            shape: 'rect', position: { x, y }, width, height,
-            velocity: { x: 0, y: 0 }, ...options
-          };
+          return { shape: 'rect', position: { x, y }, width, height, velocity: { x: 0, y: 0 }, ...options };
         }
       };
       const Body = { setVelocity(b, v) { b.velocity = { x: v.x, y: v.y }; } };
       const Composite = {
         add(world, items) {
-          for (const b of (Array.isArray(items) ? items : [items])) {
-            (b.isStatic ? world.static : world.dynamic).push(b);
-          }
+          for (const b of (Array.isArray(items) ? items : [items])) (b.isStatic ? world.static : world.dynamic).push(b);
         },
         remove(world, b) {
           const a = b.isStatic ? world.static : world.dynamic;
@@ -84,7 +149,7 @@
         }
       };
       const limit = (v, a, b) => Math.max(a, Math.min(b, v));
-      function bounce(ball, nx, ny, penetration, surface) {
+      function bounce(ball, nx, ny, penetration) {
         ball.position.x += nx * (penetration + 0.04);
         ball.position.y += ny * (penetration + 0.04);
         const normalSpeed = ball.velocity.x * nx + ball.velocity.y * ny;
@@ -92,8 +157,6 @@
           const elasticity = Math.max(0, Math.min(0.35, ball.restitution || 0));
           ball.velocity.x -= (1 + elasticity) * normalSpeed * nx;
           ball.velocity.y -= (1 + elasticity) * normalSpeed * ny;
-          // Sin rozamiento: conservamos toda la velocidad tangencial.
-          // El impulso solo modifica la componente normal a la superficie.
         }
       }
       function collide(ball, fixed) {
@@ -107,7 +170,7 @@
           const d = Math.sqrt(dd);
           const nx = d > 1e-8 ? ox / d : (Math.random() < 0.5 ? -1 : 1);
           const ny = d > 1e-8 ? oy / d : 0;
-          bounce(ball, nx, ny, range - d, fixed);
+          bounce(ball, nx, ny, range - d);
         } else {
           const left = fixed.position.x - fixed.width / 2;
           const right = fixed.position.x + fixed.width / 2;
@@ -121,9 +184,8 @@
           if (dd >= r * r) return;
           const d = Math.sqrt(dd);
           if (d > 1e-8) {
-            bounce(ball, ox / d, oy / d, r - d, fixed);
+            bounce(ball, ox / d, oy / d, r - d);
           } else {
-            // Centro dentro del rectángulo: expulsar hacia la cara más próxima.
             const faces = [
               { dist: x - left, nx: -1, ny: 0 },
               { dist: right - x, nx: 1, ny: 0 },
@@ -131,16 +193,13 @@
               { dist: bottom - y, nx: 0, ny: 1 }
             ];
             faces.sort((a, b) => a.dist - b.dist);
-            bounce(ball, faces[0].nx, faces[0].ny, r + faces[0].dist, fixed);
+            bounce(ball, faces[0].nx, faces[0].ny, r + faces[0].dist);
           }
         }
       }
       const Engine = {
-        create() {
-          return { gravity: { x: 0, y: 1, scale: 0.001 }, world: { static: [], dynamic: [] } };
-        },
+        create() { return { gravity: { x: 0, y: 1, scale: 0.001 }, world: { static: [], dynamic: [] } }; },
         update(engine, ms) {
-          // Se integran velocidades en px/segundo y posición en píxeles.
           const dt = ms / 1000;
           const gx = engine.gravity.x * 920;
           const gy = engine.gravity.y * 920;
@@ -166,28 +225,31 @@
       let matterReady = false;
       const $ = id => document.getElementById(id);
       const canvas = $('board'), ctx = canvas.getContext('2d');
+      const trailsCanvas = document.createElement('canvas');
+      trailsCanvas.width = canvas.width; trailsCanvas.height = canvas.height;
+      const tctx = trailsCanvas.getContext('2d');
       const W = 1000, H = 830, CENTER = W / 2;
       let FLOOR_Y = 785, BIN_TOP = 625;
       let cameraScale = 1, cameraX = 0, cameraY = 0;
-      const STEP_MS = 1000 / 60; // Física con intervalo fijo, independiente de la frecuencia de pantalla.
+      const STEP_MS = 1000 / 60;
       const STATIC = 0x0001, BALL = 0x0002;
       const staticFilter = { category: STATIC, mask: BALL };
       const ballFilter = { category: BALL, mask: STATIC };
       const clamp = (value, lo, hi) => Math.max(lo, Math.min(hi, value));
       const rnd = (lo, hi) => lo + Math.random() * (hi - lo);
       const fmt = value => Number(value).toLocaleString('es-CL');
+      const STORAGE_KEY = 'galton_saved_params_v1';
 
       let engine = null, n = 10, total = 500;
       let dx = 64, dy = 46, pegR = 7, ballR = 5, firstY = 128;
       let dropHeight = 90, spawnDy = 6;
       let pegs = [], stationary = [], moving = [], counts = [];
       let started = false, paused = false, spawned = 0, received = 0, spawnCredit = 0;
-      let speed = 1, restitution = 0.02, binWidth = 1, spawnDx = 8, showTheory = true;
+      let speed = 1, restitution = 0.02, binWidth = 1, spawnDx = 8, showTheory = true, drawTrails = false;
       let lastFrame = 0, accumulator = 0;
+      let savedPresets = [];
 
-      function engineLabel() {
-        $('engineLabel').textContent = isMatter ? 'Motor: Matter.js' : 'Motor: integrado (sin conexión)';
-      }
+      function engineLabel() { $('engineLabel').textContent = isMatter ? 'Motor: Matter.js' : 'Motor: integrado (sin conexión)'; }
       function activateMatterWhenSafe() {
         if (!matterReady || isMatter || started || spawned > 0) return;
         ({ Engine, Bodies, Body, Composite } = window.Matter);
@@ -205,14 +267,32 @@
             activateMatterWhenSafe();
           }
         };
-        // Un bloqueo de la CDN no impide usar el motor integrado.
         script.onerror = () => {};
         document.head.appendChild(script);
       }
 
-      // 1. Geometría triangular: cada fila r tiene exactamente r+1 obstáculos.
-      // La separación física puede superar el ancho del Canvas porque la cámara
-      // aplica una reducción uniforme sin alterar la física ni las medidas indicadas.
+      function clearTrails() {
+        tctx.clearRect(0, 0, trailsCanvas.width, trailsCanvas.height);
+      }
+      function beginTrailLayer() {
+        clearTrails();
+        tctx.save();
+        tctx.setTransform(cameraScale, 0, 0, cameraScale, cameraX, cameraY);
+        tctx.strokeStyle = 'rgba(123,232,238,0.08)';
+        tctx.lineWidth = 1.2 / Math.max(0.45, cameraScale);
+        tctx.lineCap = 'round';
+        tctx.lineJoin = 'round';
+      }
+      function endTrailLayer() {
+        tctx.restore();
+      }
+      function redrawTrailLayerForCurrentCamera() {
+        clearTrails();
+        if (!drawTrails) return;
+        beginTrailLayer();
+        endTrailLayer();
+      }
+
       function updateGeometryControls() {
         $('pegSpacingMaxLabel').textContent = `${$('pegSpacing').max} px`;
         $('pegSpacingValue').textContent = `${$('pegSpacing').value} px`;
@@ -235,7 +315,6 @@
         dy = dx * 0.72;
         ballR = Number($('ballSize').value) / 2;
         pegR = Number($('pegSize').value) / 2;
-        // El inicio se desplaza hacia abajo cuando se eligen alturas grandes.
         firstY = Math.max(128, dropHeight + spawnDy + ballR + 32);
         const lastPegY = firstY + (n - 1) * dy;
         BIN_TOP = lastPegY + Math.max(76, dx * 0.83);
@@ -249,8 +328,6 @@
             : `Paso libre horizontal aproximado: ${freeGap.toFixed(0)} px.`;
       }
       function fitCamera() {
-        // Muestra toda la geometría, incluidos lanzamientos altos y matriz ancha.
-        // No cambiamos las coordenadas físicas: solo el dibujo en Canvas.
         const worldTop = Math.min(0, firstY - dropHeight - spawnDy - ballR - 18);
         const worldBottom = FLOOR_Y + 40;
         const halfWidth = ((n + 1) * dx) / 2 + 40;
@@ -261,33 +338,17 @@
       function leftEdge() { return CENTER - ((n + 1) / 2) * dx; }
 
       function staticCircle(x, y, r) {
-        return Bodies.circle(x, y, r, {
-          isStatic: true,
-          restitution: 0,
-          friction: 0,
-          frictionStatic: 0,
-          collisionFilter: { ...staticFilter }
-        });
+        return Bodies.circle(x, y, r, { isStatic: true, restitution: 0, friction: 0, frictionStatic: 0, collisionFilter: { ...staticFilter } });
       }
       function staticWall(x, y, width, height) {
-        return Bodies.rectangle(x, y, width, height, {
-          isStatic: true,
-          restitution: 0,
-          friction: 0,
-          frictionStatic: 0,
-          collisionFilter: { ...staticFilter }
-        });
+        return Bodies.rectangle(x, y, width, height, { isStatic: true, restitution: 0, friction: 0, frictionStatic: 0, collisionFilter: { ...staticFilter } });
       }
 
-      // 2. Se reconstruye todo el mundo al cambiar el número de niveles.
       function createWorld() {
         dimensions();
         engine = Engine.create({ enableSleeping: false, positionIterations: 8, velocityIterations: 8 });
-        engine.gravity.x = 0;
-        engine.gravity.y = 1.0;
-        engine.gravity.scale = 0.001;
+        engine.gravity.x = 0; engine.gravity.y = 1.0; engine.gravity.scale = 0.001;
         pegs = []; stationary = []; moving = [];
-
         for (let row = 0; row < n; row++) {
           for (let col = 0; col <= row; col++) {
             const x = CENTER + (col - row / 2) * dx;
@@ -296,49 +357,42 @@
             stationary.push(staticCircle(x, y, pegR));
           }
         }
-
-        // Las paredes laterales y los separadores son cuerpos estáticos reales.
         const left = leftEdge();
         const width = (n + 1) * dx;
         const wallTop = firstY - 34;
         stationary.push(staticWall(left - 8, (wallTop + FLOOR_Y) / 2, 9, FLOOR_Y - wallTop + 24));
         stationary.push(staticWall(left + width + 8, (wallTop + FLOOR_Y) / 2, 9, FLOOR_Y - wallTop + 24));
-        for (let i = 1; i <= n; i++) {
-          stationary.push(staticWall(left + i * dx, (BIN_TOP + FLOOR_Y) / 2 + 5, 5, FLOOR_Y - BIN_TOP + 18));
-        }
+        for (let i = 1; i <= n; i++) stationary.push(staticWall(left + i * dx, (BIN_TOP + FLOOR_Y) / 2 + 5, 5, FLOOR_Y - BIN_TOP + 18));
         stationary.push(staticWall(CENTER, FLOOR_Y + 11, width + 36, 18));
         Composite.add(engine.world, stationary);
       }
 
-      // 3. Una bolita solo choca con STATIC (obstáculos, tabiques y paredes).
-      //    Nunca con BALL: dos bolitas pueden superponerse sin afectarse.
       function launchBall() {
-        // Posición inicial: x = CENTER + U(-Δx,+Δx)
-        //                   y = firstY - altura + U(-Δy,+Δy).
-        // Una velocidad horizontal imperceptible evita el equilibrio exacto
-        // sobre la cima de un obstáculo cuando Δx = 0 y e = 0.
         const x = CENTER + rnd(-spawnDx, spawnDx);
         const y = firstY - dropHeight + rnd(-spawnDy, spawnDy);
         const body = Bodies.circle(x, y, ballR, {
-          restitution,
-          friction: 0,
-          frictionStatic: 0,
-          frictionAir: 0,
-          density: 0.001,
-          collisionFilter: { ...ballFilter }
+          restitution, friction: 0, frictionStatic: 0, frictionAir: 0,
+          density: 0.001, collisionFilter: { ...ballFilter }
         });
+        body.prev = { x, y };
         Body.setVelocity(body, { x: isMatter ? rnd(-0.07, 0.07) : rnd(-2, 2), y: 0 });
         Composite.add(engine.world, body);
         moving.push(body);
         spawned++;
       }
+      function indexFor(x) { return clamp(Math.floor((x - leftEdge()) / dx), 0, n); }
 
-      function indexFor(x) {
-        return clamp(Math.floor((x - leftEdge()) / dx), 0, n);
+      function drawTrailSegment(body) {
+        if (!drawTrails || !body.prev) return;
+        tctx.beginPath();
+        tctx.moveTo(body.prev.x, body.prev.y);
+        tctx.lineTo(body.position.x, body.position.y);
+        tctx.stroke();
+        body.prev.x = body.position.x;
+        body.prev.y = body.position.y;
       }
 
       function simulateStep() {
-        // La tasa es por segundo de tiempo simulado; no depende del monitor.
         const rate = Math.max(12, Math.min(160, total / 20));
         spawnCredit += STEP_MS / 1000 * rate;
         while (spawnCredit >= 1 && spawned < total && moving.length < 260) {
@@ -346,12 +400,10 @@
           spawnCredit -= 1;
         }
         Engine.update(engine, STEP_MS);
-
-        // Acumulación estadística: al tocar el fondo, se cuenta y se retira.
-        // Esto evita apilamientos que serían inconsistentes con la independencia.
         for (let i = moving.length - 1; i >= 0; i--) {
           const b = moving[i];
-          if (b.position.y >= FLOOR_Y - ballR - 1 || b.position.y > H + 40) {
+          drawTrailSegment(b);
+          if (b.position.y >= FLOOR_Y - ballR - 1 || b.position.y > H + 1200) {
             counts[indexFor(b.position.x)]++;
             received++;
             Composite.remove(engine.world, b);
@@ -369,20 +421,17 @@
         spawned = 0; received = 0; spawnCredit = 0; accumulator = 0;
         counts = Array(n + 1).fill(0);
         createWorld();
+        clearTrails();
+        if (drawTrails) { beginTrailLayer(); endTrailLayer(); }
         updateNumbers();
         render();
       }
       function configure() {
         n = Number($('levels').value);
         total = clamp(Math.round(Number($('balls').value) || 500), 10, 5000);
-        $('balls').value = total;
-        $('ballsRange').value = total;
-        $('levelsValue').textContent = n;
-        $('levelsInline').textContent = n;
-        $('pockets').textContent = n + 1;
-        updateGeometryControls();
-        updateBinWidth();
-        reset();
+        $('balls').value = total; $('ballsRange').value = total;
+        $('levelsValue').textContent = n; $('levelsInline').textContent = n; $('pockets').textContent = n + 1;
+        updateGeometryControls(); updateBinWidth(); reset();
       }
       function updateBinWidth() {
         const max = Math.min(6, n + 1);
@@ -393,13 +442,10 @@
         $('binWidthMaxLabel').textContent = `${max} compartimentos`;
       }
       function play() {
-        // Play funciona como Iniciar o Reiniciar: si hay una corrida en curso,
-        // pausada o terminada, borra sus datos y comienza desde cero.
         activateMatterWhenSafe();
         if (started || spawned > 0) reset();
-        started = true;
-        paused = false;
-        updateNumbers();
+        if (drawTrails) { clearTrails(); beginTrailLayer(); endTrailLayer(); }
+        started = true; paused = false; updateNumbers();
       }
       function togglePause() {
         if (!started) return;
@@ -407,26 +453,6 @@
         updateNumbers();
       }
 
-      function updateNumbers() {
-        $('arrived').textContent = fmt(received);
-        $('moving').textContent = fmt(moving.length);
-        $('legendLabel').textContent = `${fmt(received)} de ${fmt(total)} bolitas registradas`;
-        $('mean').textContent = received
-          ? (counts.reduce((sum, amount, k) => sum + k * amount, 0) / received).toFixed(2).replace('.', ',')
-          : '—';
-        $('progress').style.width = `${(100 * received / total).toFixed(2)}%`;
-        $('statusDot').className = 'status-dot' + (started && !paused ? ' playing' : '');
-        $('statusText').textContent = started
-          ? (paused ? 'Simulación pausada' : 'Simulación en curso')
-          : (received >= total ? 'Simulación completada' : 'Preparado para comenzar');
-        const hasRun = started || spawned > 0;
-        $('start').textContent = hasRun ? '↻ Reiniciar y reproducir' : '▶ Iniciar';
-        $('start').title = hasRun ? 'Reiniciar desde cero y comenzar de inmediato' : 'Iniciar simulación';
-        $('pause').disabled = !started;
-        $('pause').textContent = paused ? '▶ Continuar' : 'Ⅱ Pausar';
-      }
-
-      // 4. Distribución teórica: n niveles => n+1 compartimentos.
       function binomial() {
         let coefficients = [1];
         for (let row = 1; row <= n; row++) {
@@ -436,9 +462,6 @@
         }
         return coefficients.map(c => c / 2 ** n);
       }
-
-      // 5. El control de ancho de bins NO altera la física ni los datos originales.
-      //    Solo agrupa contadores contiguos, y agrupa también la teoría.
       function groupBins(values) {
         const output = [];
         for (let i = 0; i < values.length; i += binWidth) {
@@ -449,10 +472,168 @@
         return output;
       }
 
-      function rectangle(x, y, w, h, r = 0) {
-        ctx.beginPath();
-        ctx.roundRect(x, y, w, h, r);
+      function logGamma(z) {
+        const p = [676.5203681218851,-1259.1392167224028,771.32342877765313,-176.61502916214059,12.507343278686905,-0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+        if (z < 0.5) return Math.log(Math.PI) - Math.log(Math.sin(Math.PI * z)) - logGamma(1 - z);
+        z -= 1;
+        let x = 0.99999999999980993;
+        for (let i = 0; i < p.length; i++) x += p[i] / (z + i + 1);
+        const t = z + p.length - 0.5;
+        return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
       }
+      function gammaP(a, x) {
+        if (x <= 0) return 0;
+        if (x < a + 1) {
+          let ap = a, sum = 1 / a, del = sum;
+          for (let n = 1; n <= 100; n++) {
+            ap += 1;
+            del *= x / ap;
+            sum += del;
+            if (Math.abs(del) < Math.abs(sum) * 1e-12) break;
+          }
+          return sum * Math.exp(-x + a * Math.log(x) - logGamma(a));
+        }
+        let b = x + 1 - a, c = 1 / 1e-30, d = 1 / b, h = d;
+        for (let i = 1; i <= 100; i++) {
+          const an = -i * (i - a);
+          b += 2;
+          d = an * d + b; if (Math.abs(d) < 1e-30) d = 1e-30;
+          c = b + an / c; if (Math.abs(c) < 1e-30) c = 1e-30;
+          d = 1 / d;
+          const del = d * c;
+          h *= del;
+          if (Math.abs(del - 1) < 1e-12) break;
+        }
+        return 1 - Math.exp(-x + a * Math.log(x) - logGamma(a)) * h;
+      }
+      function chiSquareSurvival(x, k) {
+        if (!(x >= 0) || !(k > 0)) return NaN;
+        return 1 - gammaP(k / 2, x / 2);
+      }
+      function computeChiSquareStats() {
+        if (received === 0) return { chi2: null, df: null, p: null, valid: false, message: 'Lanza bolitas para evaluar el ajuste.' };
+        const obs = groupBins(counts);
+        const probs = groupBins(binomial());
+        const exp = probs.map(p => p * received);
+        let chi2 = 0, used = 0;
+        let minExpected = Infinity;
+        for (let i = 0; i < obs.length; i++) {
+          if (exp[i] > 0) {
+            chi2 += (obs[i] - exp[i]) ** 2 / exp[i];
+            used++;
+            if (exp[i] < minExpected) minExpected = exp[i];
+          }
+        }
+        const df = Math.max(used - 1, 0);
+        const p = df > 0 ? chiSquareSurvival(chi2, df) : null;
+        const valid = minExpected >= 5 && df > 0;
+        const message = valid
+          ? `Todos los valores esperados son al menos 5. El test es razonable con ${used} categorías.`
+          : (df <= 0 ? 'Se requieren al menos dos categorías con frecuencia esperada positiva.' : `Al menos una frecuencia esperada es menor que 5 (mínimo ${minExpected.toFixed(2)}). Conviene agrupar más bins.`);
+        return { chi2, df, p, valid, message };
+      }
+      function updateChiSquarePanel() {
+        const stats = computeChiSquareStats();
+        $('chi2Value').textContent = stats.chi2 == null ? '—' : stats.chi2.toFixed(2).replace('.', ',');
+        $('chi2Df').textContent = stats.df == null ? '—' : String(stats.df);
+        $('chi2P').textContent = stats.p == null || Number.isNaN(stats.p) ? '—' : stats.p.toFixed(4).replace('.', ',');
+        const pill = $('chi2Validity');
+        pill.className = 'pill ' + (stats.valid ? 'ok' : 'warn');
+        pill.textContent = stats.valid ? 'Aproximación aceptable' : 'Usar con cautela';
+        $('chi2Note').textContent = stats.message;
+      }
+
+      function getCurrentParams() {
+        return {
+          balls: Number($('balls').value), levels: Number($('levels').value), ballSize: Number($('ballSize').value), pegSize: Number($('pegSize').value),
+          pegSpacing: Number($('pegSpacing').value), dropHeight: Number($('dropHeight').value), spawnDx: Number($('spawnDx').value), spawnDy: Number($('spawnDy').value),
+          binWidth: Number($('binWidth').value), bounce: Number($('bounce').value), speed: Number($('speed').value), theory: $('theory').checked, drawTrails: $('drawTrails').checked
+        };
+      }
+      function applyParams(params) {
+        $('balls').value = params.balls; $('ballsRange').value = params.balls;
+        $('levels').value = params.levels; $('ballSize').value = params.ballSize; $('pegSize').value = params.pegSize;
+        $('pegSpacing').value = params.pegSpacing; $('dropHeight').value = params.dropHeight; $('spawnDx').value = params.spawnDx;
+        $('spawnDy').value = params.spawnDy; $('binWidth').value = params.binWidth; $('bounce').value = params.bounce;
+        $('speed').value = params.speed; $('theory').checked = !!params.theory; $('drawTrails').checked = !!params.drawTrails;
+        speed = Number($('speed').value);
+        $('speedValue').textContent = String(speed.toLocaleString('es-CL', { maximumFractionDigits: 2 })) + '×';
+        restitution = Number($('bounce').value);
+        $('bounceValue').textContent = restitution.toFixed(2).replace('.', ',');
+        drawTrails = $('drawTrails').checked;
+        configure();
+      }
+      function loadSavedPresets() {
+        try { savedPresets = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+        catch { savedPresets = []; }
+        if (!Array.isArray(savedPresets)) savedPresets = [];
+      }
+      function persistSavedPresets() { localStorage.setItem(STORAGE_KEY, JSON.stringify(savedPresets)); }
+      function renderSavedPresets() {
+        const box = $('savedList');
+        box.innerHTML = '';
+        $('savedEmpty').style.display = savedPresets.length ? 'none' : 'block';
+        for (const preset of savedPresets) {
+          const item = document.createElement('div');
+          item.className = 'saved-item';
+          const chiLabel = preset.chi2 == null ? 'χ²: —' : `χ²: ${preset.chi2.toFixed(2).replace('.', ',')}`;
+          item.innerHTML = `
+            <div class="saved-head">
+              <div>
+                <div class="saved-name"></div>
+                <div class="saved-meta"></div>
+              </div>
+            </div>
+            <div class="saved-actions">
+              <button class="btn small" data-action="load">Cargar</button>
+              <button class="btn small secondary" data-action="delete">Eliminar</button>
+            </div>`;
+          item.querySelector('.saved-name').textContent = preset.name;
+          item.querySelector('.saved-meta').textContent = `${chiLabel} · p: ${preset.p == null ? '—' : preset.p.toFixed(4).replace('.', ',')} · ${preset.dateLabel}`;
+          item.querySelector('[data-action="load"]').addEventListener('click', () => applyParams(preset.params));
+          item.querySelector('[data-action="delete"]').addEventListener('click', () => {
+            savedPresets = savedPresets.filter(x => x.id !== preset.id);
+            persistSavedPresets();
+            renderSavedPresets();
+          });
+          box.appendChild(item);
+        }
+      }
+      function saveCurrentPreset() {
+        const suggested = `Intento ${savedPresets.length + 1}`;
+        const name = (window.prompt('Nombre para estos parámetros:', suggested) || '').trim();
+        if (!name) return;
+        const stats = computeChiSquareStats();
+        const now = new Date();
+        savedPresets.unshift({
+          id: now.getTime() + Math.random().toString(16).slice(2),
+          name,
+          dateLabel: now.toLocaleString('es-CL'),
+          chi2: stats.chi2,
+          p: stats.p,
+          params: getCurrentParams()
+        });
+        persistSavedPresets();
+        renderSavedPresets();
+      }
+
+      function updateNumbers() {
+        $('arrived').textContent = fmt(received);
+        $('moving').textContent = fmt(moving.length);
+        $('legendLabel').textContent = `${fmt(received)} de ${fmt(total)} bolitas registradas`;
+        $('mean').textContent = received ? (counts.reduce((sum, amount, k) => sum + k * amount, 0) / received).toFixed(2).replace('.', ',') : '—';
+        $('progress').style.width = `${(100 * received / total).toFixed(2)}%`;
+        $('statusDot').className = 'status-dot' + (started && !paused ? ' playing' : '');
+        $('statusText').textContent = started ? (paused ? 'Simulación pausada' : 'Simulación en curso') : (received >= total ? 'Simulación completada' : 'Preparado para comenzar');
+        const hasRun = started || spawned > 0;
+        $('start').textContent = hasRun ? '↻ Reiniciar y reproducir' : '▶ Iniciar';
+        $('start').title = hasRun ? 'Reiniciar desde cero y comenzar de inmediato' : 'Iniciar simulación';
+        $('pause').disabled = !started;
+        $('pause').textContent = paused ? '▶ Continuar' : 'Ⅱ Pausar';
+        updateChiSquarePanel();
+      }
+
+      function rectangle(x, y, w, h, r = 0) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); }
       function render() {
         ctx.clearRect(0, 0, W, H);
         const bg = ctx.createLinearGradient(0, 0, 0, H);
@@ -461,6 +642,8 @@
         ctx.strokeStyle = 'rgba(103,139,182,.075)'; ctx.lineWidth = 1;
         for (let x = 40; x < W; x += 40) { ctx.beginPath(); ctx.moveTo(x, 30); ctx.lineTo(x, 810); ctx.stroke(); }
         for (let y = 30; y < H; y += 40) { ctx.beginPath(); ctx.moveTo(20, y); ctx.lineTo(980, y); ctx.stroke(); }
+
+        if (drawTrails) ctx.drawImage(trailsCanvas, 0, 0);
 
         ctx.save();
         ctx.setTransform(cameraScale, 0, 0, cameraScale, cameraX, cameraY);
@@ -471,7 +654,6 @@
         ctx.moveTo(left + totalWidth + 8, firstY - 34); ctx.lineTo(left + totalWidth + 8, FLOOR_Y + 5);
         ctx.stroke();
 
-        // Área posible de salida: rango horizontal ±Δx y vertical ±Δy.
         const emitY = firstY - dropHeight;
         ctx.save();
         ctx.strokeStyle = 'rgba(100,216,237,.76)';
@@ -487,10 +669,8 @@
 
         for (const peg of pegs) {
           ctx.shadowBlur = 12; ctx.shadowColor = 'rgba(132,173,221,.26)';
-          ctx.beginPath(); ctx.arc(peg.x, peg.y, pegR, 0, 2 * Math.PI);
-          ctx.fillStyle = '#b3c9df'; ctx.fill(); ctx.shadowBlur = 0;
-          ctx.beginPath(); ctx.arc(peg.x - 1.7, peg.y - 2, Math.max(1.5, pegR * 0.3), 0, 2 * Math.PI);
-          ctx.fillStyle = '#eef7ff'; ctx.fill();
+          ctx.beginPath(); ctx.arc(peg.x, peg.y, pegR, 0, 2 * Math.PI); ctx.fillStyle = '#b3c9df'; ctx.fill(); ctx.shadowBlur = 0;
+          ctx.beginPath(); ctx.arc(peg.x - 1.7, peg.y - 2, Math.max(1.5, pegR * 0.3), 0, 2 * Math.PI); ctx.fillStyle = '#eef7ff'; ctx.fill();
         }
 
         const observed = groupBins(counts);
@@ -498,8 +678,7 @@
         const maxHeight = Math.max(1, ...observed, total * Math.max(...expected) * 1.1);
         const usableHeight = FLOOR_Y - BIN_TOP - 16;
         ctx.fillStyle = '#182b45';
-        rectangle(left - 5, BIN_TOP - 3, totalWidth + 10, FLOOR_Y - BIN_TOP + 14, 6);
-        ctx.fill();
+        rectangle(left - 5, BIN_TOP - 3, totalWidth + 10, FLOOR_Y - BIN_TOP + 14, 6); ctx.fill();
 
         for (let g = 0; g < observed.length; g++) {
           const from = g * binWidth;
@@ -519,7 +698,6 @@
           ctx.fillText(from === end ? String(from) : `${from}–${end}`, startX + width / 2, FLOOR_Y + 29);
         }
 
-        // Separadores de compartimentos físicos (siempre del mismo ancho).
         ctx.strokeStyle = '#738aa7'; ctx.lineWidth = 2;
         for (let i = 0; i <= n + 1; i++) {
           const x = left + i * dx;
@@ -546,24 +724,18 @@
           }
         }
 
-        // Las bolitas se dibujan sin necesidad de detectar ni resolver choques entre ellas.
         for (const body of moving) {
           const { x, y } = body.position;
           ctx.shadowBlur = 8; ctx.shadowColor = '#68dcf1';
-          ctx.beginPath(); ctx.arc(x, y, ballR, 0, 2 * Math.PI);
-          ctx.fillStyle = 'rgba(120,229,239,.86)'; ctx.fill(); ctx.shadowBlur = 0;
-          ctx.beginPath(); ctx.arc(x - ballR * 0.22, y - ballR * 0.25, Math.max(1, ballR * 0.22), 0, 2 * Math.PI);
-          ctx.fillStyle = '#e5ffff'; ctx.fill();
+          ctx.beginPath(); ctx.arc(x, y, ballR, 0, 2 * Math.PI); ctx.fillStyle = 'rgba(120,229,239,.86)'; ctx.fill(); ctx.shadowBlur = 0;
+          ctx.beginPath(); ctx.arc(x - ballR * 0.22, y - ballR * 0.25, Math.max(1, ballR * 0.22), 0, 2 * Math.PI); ctx.fillStyle = '#e5ffff'; ctx.fill();
         }
 
-        ctx.restore(); // Final de la transformación de coordenadas físicas.
-        ctx.font = '600 14px system-ui'; ctx.fillStyle = '#91a7c2'; ctx.textAlign = 'left';
-        ctx.fillText('NIVELES: ' + n, 36, 65);
+        ctx.restore();
+        ctx.font = '600 14px system-ui'; ctx.fillStyle = '#91a7c2'; ctx.textAlign = 'left'; ctx.fillText('NIVELES: ' + n, 36, 65);
         ctx.textAlign = 'right'; ctx.fillText('BOLITAS: ' + fmt(total), 963, 65);
       }
 
-      // 6. Animación: se integra la física a 60 pasos por segundo de tiempo simulado.
-      //    El control de velocidad modifica cuántos pasos se ejecutan, no la gravedad.
       function frame(now) {
         const frameTime = lastFrame ? Math.min(now - lastFrame, 65) : 0;
         lastFrame = now;
@@ -584,12 +756,8 @@
       $('balls').addEventListener('change', () => { $('ballsRange').value = $('balls').value; configure(); });
       $('ballsRange').addEventListener('input', () => { $('balls').value = $('ballsRange').value; configure(); });
       $('levels').addEventListener('input', configure);
-      // Los controles de geometría, altura, Δx y Δy reinician para no mezclar condiciones
-      // iniciales de corridas distintas en un mismo histograma.
-      for (const id of ['ballSize', 'pegSize', 'pegSpacing', 'dropHeight', 'spawnDx', 'spawnDy']) {
-        $(id).addEventListener('input', configure);
-      }
-      $('binWidth').addEventListener('input', () => { updateBinWidth(); render(); });
+      for (const id of ['ballSize', 'pegSize', 'pegSpacing', 'dropHeight', 'spawnDx', 'spawnDy']) $(id).addEventListener('input', configure);
+      $('binWidth').addEventListener('input', () => { updateBinWidth(); render(); updateNumbers(); });
       $('speed').addEventListener('input', () => {
         speed = Number($('speed').value);
         $('speedValue').textContent = String(speed.toLocaleString('es-CL', { maximumFractionDigits: 2 })) + '×';
@@ -600,11 +768,24 @@
         for (const ball of moving) ball.restitution = restitution;
       });
       $('theory').addEventListener('change', () => { showTheory = $('theory').checked; render(); });
+      $('drawTrails').addEventListener('change', () => {
+        drawTrails = $('drawTrails').checked;
+        clearTrails();
+        render();
+      });
       $('start').addEventListener('click', play);
       $('pause').addEventListener('click', togglePause);
+      $('savePreset').addEventListener('click', saveCurrentPreset);
 
       updateGeometryControls();
       updateBinWidth();
+      speed = Number($('speed').value);
+      $('speedValue').textContent = String(speed.toLocaleString('es-CL', { maximumFractionDigits: 2 })) + '×';
+      restitution = Number($('bounce').value);
+      $('bounceValue').textContent = restitution.toFixed(2).replace('.', ',');
+      drawTrails = $('drawTrails').checked;
+      loadSavedPresets();
+      renderSavedPresets();
       reset();
       engineLabel();
       requestAnimationFrame(frame);
