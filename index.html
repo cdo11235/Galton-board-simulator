@@ -69,7 +69,7 @@
       <div class="header-actions">
         <button class="btn primary" id="start" type="button" title="Iniciar o reiniciar toda la simulación">▶ Iniciar</button>
         <button class="btn" id="pause" type="button" disabled>Ⅱ Pausar</button>
-        <span class="header-badge">Funciona sin conexión · v7</span>
+        <span class="header-badge">Funciona sin conexión · v8</span>
       </div>
     </header>
 
@@ -121,6 +121,9 @@
           </div>
           <div class="control-group"><h3>Simulación</h3>
 <div class="field"><div class="field-head"><label for="balls">Cantidad de bolitas</label><input class="number" id="balls" type="number" min="10" max="5000" step="10" value="500" /></div><input id="ballsRange" type="range" min="10" max="5000" step="10" value="500"/><div class="range-ends"><span>10</span><span>5.000</span></div></div>
+          <label class="toggle"><input type="checkbox" id="ballCollisions" checked /> Habilitar colisiones entre bolitas</label>
+          <p class="note">Activado por defecto. Desactívalo para recuperar el modelo de bolitas independientes.</p>
+          <div class="field" style="margin-top:17px"><div class="field-head"><label for="launchDt">Intervalo entre lanzamientos (Δt)</label><span class="value" id="launchDtValue">40 ms</span></div><input id="launchDt" type="range" min="10" max="1000" step="10" value="40"/><div class="range-ends"><span>10 ms</span><span>1.000 ms</span></div><p class="note">Tiempo simulado entre lanzamientos: un Δt menor aumenta la cantidad de bolitas presentes simultáneamente y favorece los choques. Si la salida está ocupada, se espera a que quede espacio.</p></div>
 <div class="field"><div class="field-head"><label for="speed">Velocidad</label><span class="value" id="speedValue">1,0×</span></div><input id="speed" type="range" min="0.25" max="4" step="0.25" value="1"/><div class="range-ends"><span>0,25×</span><span>4×</span></div></div>
 <div class="field"><div class="field-head"><label for="binWidth">Ancho de bins del histograma</label><span class="value" id="binWidthValue">1</span></div><input id="binWidth" type="range" min="1" max="5" step="1" value="1"/><div class="range-ends"><span>1 compartimento</span><span id="binWidthMaxLabel">5 compartimentos</span></div></div>
           <label class="toggle"><input type="checkbox" id="theory" checked /> Mostrar curva binomial teórica</label>
@@ -133,11 +136,11 @@
           <div class="status"><span class="status-dot" id="statusDot"></span><span id="statusText">Preparado para comenzar</span></div><div class="progress-track"><div class="progress-fill" id="progress"></div></div><p id="engineLabel" class="note" aria-live="polite">Motor: integrado (sin conexión)</p>
         </section>
         <section class="panel"><h2>Resultados en tiempo real</h2><div class="stat-grid"><div class="stat"><small>Bolitas recibidas</small><strong id="arrived">0</strong></div><div class="stat"><small>En movimiento</small><strong id="moving">0</strong></div><div class="stat"><small>Compartimentos</small><strong id="pockets">11</strong></div><div class="stat"><small>Media observada</small><strong id="mean">—</strong></div></div></section>
-        <section class="panel"><h2>¿Por qué se forma una campana?</h2><p class="explain">En un modelo ideal, cada nivel permite desviarse a la izquierda o derecha con igual probabilidad. Después de <strong id="levelsInline">10</strong> decisiones, la posición final sigue una distribución binomial:</p><div class="formula">P(X = k) = C(n, k) / 2<sup>n</sup></div><p class="note">La curva es una referencia estadística ideal. Los choques se calculan con Matter.js si está disponible, o con el motor integrado de cuerpos independientes. La distribución física no tiene por qué coincidir exactamente con la binomial ideal. Agrupar bins cambia la representación del histograma y las categorías del test χ².</p></section>
+        <section class="panel"><h2>¿Por qué se forma una campana?</h2><p class="explain">En un modelo ideal, cada nivel permite desviarse a la izquierda o derecha con igual probabilidad. Después de <strong id="levelsInline">10</strong> decisiones, la posición final sigue una distribución binomial:</p><div class="formula">P(X = k) = C(n, k) / 2<sup>n</sup></div><p class="note">La curva es una referencia estadística ideal. Los choques se calculan con Matter.js si está disponible, o con el motor integrado. Las colisiones entre bolitas pueden activarse o desactivarse. La distribución física no tiene por qué coincidir exactamente con la binomial ideal. Agrupar bins cambia la representación del histograma y las categorías del test χ².</p></section>
       </aside>
     </div>
 
-    <div class="footer">Las bolitas se atraviesan entre sí: solo chocan con obstáculos y paredes. Cambiar tamaño, separación, altura, Δx, Δy o niveles reinicia la simulación y sus resultados. El botón superior permite iniciar una nueva corrida en cualquier momento. En modo rápido, cada cambio ejecuta una nueva simulación sin animar las bolitas. El ancho de bins modifica el histograma y el χ². Funciona sin Internet mediante el motor integrado y utiliza Matter.js cuando está disponible.</div>
+    <div class="footer">Las colisiones entre bolitas están activadas por defecto; se pueden desactivar para simular cuerpos independientes. Cambiar tamaño, separación, altura, Δx, Δy, niveles, Δt o colisiones reinicia la simulación y sus resultados. El botón superior permite iniciar una nueva corrida en cualquier momento. En modo rápido, cada cambio ejecuta una nueva simulación sin animar las bolitas. El ancho de bins modifica el histograma y el χ². Funciona sin Internet mediante el motor integrado y utiliza Matter.js cuando está disponible.</div>
   </main>
 
   <script>
@@ -213,6 +216,54 @@
           }
         }
       }
+      function collideDynamicBodies(world) {
+        const bodies = world.dynamic;
+        if (bodies.length < 2) return;
+        // Rejilla espacial: evita comparar todas las parejas cuando hay muchas bolitas.
+        const cellSize = Math.max(20, (bodies[0].radius || 5) * 2.5);
+        const cells = new Map();
+        for (let i = 0; i < bodies.length; i++) {
+          const a = bodies[i];
+          if (!(a.collisionFilter?.mask & 0x0002)) continue;
+          const cx = Math.floor(a.position.x / cellSize);
+          const cy = Math.floor(a.position.y / cellSize);
+          for (let ix = cx - 1; ix <= cx + 1; ix++) {
+            for (let iy = cy - 1; iy <= cy + 1; iy++) {
+              const nearby = cells.get(`${ix},${iy}`);
+              if (!nearby) continue;
+              for (const b of nearby) {
+                if (!(b.collisionFilter?.mask & 0x0002)) continue;
+                const dx = a.position.x - b.position.x;
+                const dy = a.position.y - b.position.y;
+                const minDist = a.radius + b.radius;
+                const dd = dx * dx + dy * dy;
+                if (dd >= minDist * minDist) continue;
+                const distance = Math.sqrt(dd);
+                const nx = distance > 1e-7 ? dx / distance : 1;
+                const ny = distance > 1e-7 ? dy / distance : 0;
+                const overlap = minDist - distance;
+                a.position.x += nx * (overlap + 0.02) * 0.5;
+                a.position.y += ny * (overlap + 0.02) * 0.5;
+                b.position.x -= nx * (overlap + 0.02) * 0.5;
+                b.position.y -= ny * (overlap + 0.02) * 0.5;
+                const relativeNormal = (a.velocity.x - b.velocity.x) * nx + (a.velocity.y - b.velocity.y) * ny;
+                if (relativeNormal < 0) {
+                  // Todas las bolitas tienen igual masa y radio en esta simulación.
+                  const e = Math.max(0, Math.min(0.35, Math.max(a.restitution || 0, b.restitution || 0)));
+                  const impulse = -(1 + e) * relativeNormal * 0.5;
+                  a.velocity.x += impulse * nx;
+                  a.velocity.y += impulse * ny;
+                  b.velocity.x -= impulse * nx;
+                  b.velocity.y -= impulse * ny;
+                }
+              }
+            }
+          }
+          const key = `${cx},${cy}`;
+          if (!cells.has(key)) cells.set(key, []);
+          cells.get(key).push(a);
+        }
+      }
       const Engine = {
         create() { return { gravity: { x: 0, y: 1, scale: 0.001 }, world: { static: [], dynamic: [] } }; },
         update(engine, ms) {
@@ -230,6 +281,7 @@
             b.position.y += b.velocity.y * dt;
             for (const fixed of engine.world.static) collide(b, fixed);
           }
+          collideDynamicBodies(engine.world);
         }
       };
       return { Engine, Bodies, Body, Composite };
@@ -250,7 +302,7 @@
       const STEP_MS = 1000 / 60;
       const STATIC = 0x0001, BALL = 0x0002;
       const staticFilter = { category: STATIC, mask: BALL };
-      const ballFilter = { category: BALL, mask: STATIC };
+      const ballFilter = { category: BALL, mask: STATIC | BALL };
       const clamp = (value, lo, hi) => Math.max(lo, Math.min(hi, value));
       const rnd = (lo, hi) => lo + Math.random() * (hi - lo);
       const fmt = value => Number(value).toLocaleString('es-CL');
@@ -261,6 +313,7 @@
       let dropHeight = 90, spawnDy = 6;
       let pegs = [], stationary = [], moving = [], counts = [];
       let started = false, paused = false, spawned = 0, received = 0, spawnCredit = 0;
+      let ballCollisions = true, launchDtMs = 40;
       let speed = 1, restitution = 0.02, binWidth = 1, spawnDx = 8, showTheory = true, drawTrails = false;
       let lastFrame = 0, accumulator = 0;
       let fastMode = false, showChi2 = true, fastDebounce = null;
@@ -376,15 +429,25 @@
       function launchBall() {
         const x = CENTER + rnd(-spawnDx, spawnDx);
         const y = firstY - dropHeight + rnd(-spawnDy, spawnDy);
+        // Con colisiones habilitadas, no crear dos cuerpos superpuestos.
+        // Si el emisor está ocupado, el lanzamiento queda pendiente.
+        if (ballCollisions) {
+          const minDist2 = (ballR * 2 + 0.5) ** 2;
+          for (const other of moving) {
+            const ox = other.position.x - x, oy = other.position.y - y;
+            if (ox * ox + oy * oy < minDist2) return false;
+          }
+        }
         const body = Bodies.circle(x, y, ballR, {
           restitution, friction: 0, frictionStatic: 0, frictionAir: 0,
-          density: 0.001, collisionFilter: { ...ballFilter }
+          density: 0.001, collisionFilter: { category: BALL, mask: STATIC | (ballCollisions ? BALL : 0) }
         });
         body.prev = { x, y };
         Body.setVelocity(body, { x: isMatter ? rnd(-0.07, 0.07) : rnd(-2, 2), y: 0 });
         Composite.add(engine.world, body);
         moving.push(body);
         spawned++;
+        return true;
       }
       function indexFor(x) { return clamp(Math.floor((x - leftEdge()) / dx), 0, n); }
 
@@ -408,12 +471,15 @@
       }
 
       function simulateStep() {
-        const rate = Math.max(12, Math.min(160, total / 20));
-        spawnCredit += STEP_MS / 1000 * rate;
-        while (spawnCredit >= 1 && spawned < total && moving.length < 260) {
-          launchBall();
-          spawnCredit -= 1;
+        // El Δt es tiempo FÍSICO, no tiempo de pantalla, y funciona igual en modo rápido.
+        spawnCredit += STEP_MS;
+        while (spawnCredit >= launchDtMs && spawned < total && moving.length < 260) {
+          if (!launchBall()) break; // Emisor ocupado: no crear cuerpos superpuestos.
+          spawnCredit -= launchDtMs;
         }
+        // No acumular miles de lanzamientos que luego aparezcan todos a la vez
+        // cuando la salida o el límite de cuerpos esté temporalmente bloqueado.
+        spawnCredit = Math.min(spawnCredit, launchDtMs);
         Engine.update(engine, STEP_MS);
         for (let i = moving.length - 1; i >= 0; i--) {
           const b = moving[i];
@@ -435,6 +501,9 @@
         started = false; paused = false;
         spawned = 0; received = 0; spawnCredit = 0; accumulator = 0;
         counts = Array(n + 1).fill(0);
+        ballCollisions = $('ballCollisions').checked;
+        launchDtMs = Number($('launchDt').value);
+        ballFilter.mask = STATIC | (ballCollisions ? BALL : 0);
         createWorld();
         clearTrails();
         updateNumbers();
@@ -541,10 +610,16 @@
         }
         const df = Math.max(used - 1, 0);
         const p = df > 0 ? chiSquareSurvival(chi2, df) : null;
-        const valid = minExpected >= 5 && df > 0;
-        const message = valid
-          ? `Todos los valores esperados son al menos 5. El test es razonable con ${used} categorías.`
-          : (df <= 0 ? 'Se requieren al menos dos categorías con frecuencia esperada positiva.' : `Al menos una frecuencia esperada es menor que 5 (mínimo ${minExpected.toFixed(2)}). Conviene agrupar más bins.`);
+        const validCounts = minExpected >= 5 && df > 0;
+        // El p-valor chi² estándar presupone observaciones independientes.
+        // Con choques entre bolitas es solo una referencia descriptiva.
+        const valid = validCounts && !ballCollisions;
+        const countNote = validCounts
+          ? `Todos los valores esperados son al menos 5 (${used} categorías).`
+          : (df <= 0 ? 'Se requieren al menos dos categorías.' : `Al menos una frecuencia esperada es menor que 5 (mínimo ${minExpected.toFixed(2)}); agrupa más bins.`);
+        const message = ballCollisions
+          ? `${countNote} Hay choques entre bolitas: sus resultados pueden ser dependientes y el valor p estándar es solo orientativo.`
+          : `${countNote} ${validCounts ? 'La aproximación χ² es razonable bajo independencia.' : 'El valor p puede no ser fiable.'}`;
         return { chi2, df, p, valid, message };
       }
       function updateChiSquarePanel() {
@@ -562,7 +637,8 @@
         return {
           balls: Number($('balls').value), levels: Number($('levels').value), ballSize: Number($('ballSize').value), pegSize: Number($('pegSize').value),
           pegSpacing: Number($('pegSpacing').value), dropHeight: Number($('dropHeight').value), spawnDx: Number($('spawnDx').value), spawnDy: Number($('spawnDy').value),
-          binWidth: Number($('binWidth').value), bounce: Number($('bounce').value), speed: Number($('speed').value), theory: $('theory').checked, drawTrails: $('drawTrails').checked, showChi2: $('showChi2').checked, fastMode: $('fastMode').checked, trailColor: $('trailColor').value
+          binWidth: Number($('binWidth').value), bounce: Number($('bounce').value), speed: Number($('speed').value), theory: $('theory').checked, drawTrails: $('drawTrails').checked, showChi2: $('showChi2').checked, fastMode: $('fastMode').checked, trailColor: $('trailColor').value,
+          ballCollisions: $('ballCollisions').checked, launchDt: Number($('launchDt').value)
         };
       }
       function applyParams(params) {
@@ -573,6 +649,9 @@
         $('speed').value = params.speed; $('theory').checked = !!params.theory; $('drawTrails').checked = !!params.drawTrails;
         $('showChi2').checked = params.showChi2 !== false; $('fastMode').checked = !!params.fastMode;
         $('trailColor').value = params.trailColor || '#e48aff';
+        $('ballCollisions').checked = params.ballCollisions !== false;
+        $('launchDt').value = String(params.launchDt ?? 40);
+        $('launchDtValue').textContent = `${$('launchDt').value} ms`;
         speed = Number($('speed').value);
         $('speedValue').textContent = String(speed.toLocaleString('es-CL', { maximumFractionDigits: 2 })) + '×';
         restitution = Number($('bounce').value);
@@ -806,6 +885,13 @@
       $('levels').addEventListener('input', configure);
       for (const id of ['ballSize', 'pegSize', 'pegSpacing', 'dropHeight', 'spawnDx', 'spawnDy']) $(id).addEventListener('input', configure);
       $('binWidth').addEventListener('input', () => { updateBinWidth(); render(); updateNumbers(); });
+      $('ballCollisions').addEventListener('change', configure);
+      $('launchDt').addEventListener('input', () => {
+        launchDtMs = Number($('launchDt').value);
+        $('launchDtValue').textContent = `${launchDtMs.toLocaleString('es-CL')} ms`;
+        // Cambiar la cadencia cambia la física; reiniciamos para comparar corridas.
+        configure();
+      });
       $('speed').addEventListener('input', () => {
         speed = Number($('speed').value);
         $('speedValue').textContent = String(speed.toLocaleString('es-CL', { maximumFractionDigits: 2 })) + '×';
@@ -852,6 +938,9 @@
       $('speedValue').textContent = String(speed.toLocaleString('es-CL', { maximumFractionDigits: 2 })) + '×';
       restitution = Number($('bounce').value);
       $('bounceValue').textContent = restitution.toFixed(2).replace('.', ',');
+      ballCollisions = $('ballCollisions').checked;
+      launchDtMs = Number($('launchDt').value);
+      $('launchDtValue').textContent = `${launchDtMs} ms`;
       drawTrails = $('drawTrails').checked;
       showChi2 = $('showChi2').checked;
       fastMode = $('fastMode').checked;
