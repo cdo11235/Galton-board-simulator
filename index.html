@@ -56,6 +56,8 @@
     .color-control{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;color:#b6c7da;font-size:12px}
     .color-control input[type=color]{height:32px;width:54px;border:1px solid #3a516c;background:#101b30;border-radius:6px;cursor:pointer;padding:2px}
     .panel[hidden]{display:none!important}
+    .sensor-key{display:flex;gap:6px;align-items:center;margin-top:8px;color:#a8b8cf;font-size:10px}
+    .sensor-key i{display:inline-block;width:15px;height:5px;border-radius:3px}
   </style>
 </head>
 <body>
@@ -64,12 +66,12 @@
       <div>
         <p class="eyebrow">Laboratorio de probabilidad</p>
         <h1>Máquina de Galton</h1>
-        <p>Explora colisiones físicas independientes y evalúa qué tan cerca estás de la binomial teórica.</p>
+        <p>Estudia cómo la geometría, los rebotes y las interacciones generan distribuciones de probabilidad.</p>
       </div>
       <div class="header-actions">
         <button class="btn primary" id="start" type="button" title="Iniciar o reiniciar toda la simulación">▶ Iniciar</button>
         <button class="btn" id="pause" type="button" disabled>Ⅱ Pausar</button>
-        <span class="header-badge">Funciona sin conexión · v8</span>
+        <span class="header-badge">Funciona sin conexión · v9</span>
       </div>
     </header>
 
@@ -101,26 +103,29 @@
             <span class="key"><i class="line"></i> Binomial teórica</span>
             <span class="key"><i class="pathkey" id="trailLegendLine"></i> Trayectorias acumuladas</span>
           </div>
-          <span id="legendLabel">0 de 500 bolitas registradas</span>
+          <span id="legendLabel">0 de 2.000 bolitas registradas</span>
         </div>
       </section>
 
       <aside>
         <section class="panel"><h2>Configuración</h2>
           <div class="control-group"><h3>Geométricos</h3>
-<div class="field"><div class="field-head"><label for="ballSize">Diámetro de bolitas</label><span class="value" id="ballSizeValue">10 px</span></div><input id="ballSize" type="range" min="4" max="18" step="1" value="10"/><div class="range-ends"><span>4 px</span><span>18 px</span></div></div>
-<div class="field"><div class="field-head"><label for="pegSize">Diámetro de obstáculos</label><span class="value" id="pegSizeValue">14 px</span></div><input id="pegSize" type="range" min="6" max="22" step="1" value="14"/><div class="range-ends"><span>6 px</span><span>22 px</span></div></div>
-<div class="field"><div class="field-head"><label for="pegSpacing">Separación entre obstáculos</label><span class="value" id="pegSpacingValue">64 px</span></div><input id="pegSpacing" type="range" min="30" max="180" step="1" value="64"/><div class="range-ends"><span>30 px</span><span id="pegSpacingMaxLabel">180 px</span></div><p class="note">Distancia horizontal entre centros. La distancia vertical también aumenta. La vista se reduce automáticamente si la matriz supera el espacio disponible.</p><p class="note" id="geometryWarning" aria-live="polite"></p></div>
+<div class="field"><div class="field-head"><label for="ballSize">Diámetro de bolitas</label><span class="value" id="ballSizeValue">16 px</span></div><input id="ballSize" type="range" min="4" max="24" step="1" value="16"/><div class="range-ends"><span>4 px</span><span>24 px</span></div></div>
+<div class="field"><div class="field-head"><label for="pegSize">Diámetro de obstáculos</label><span class="value" id="pegSizeValue">8 px</span></div><input id="pegSize" type="range" min="4" max="24" step="1" value="8"/><div class="range-ends"><span>4 px</span><span>24 px</span></div></div>
+<div class="field"><div class="field-head"><label for="pegSpacing">Separación horizontal (dₓ)</label><span class="value" id="pegSpacingValue">40 px</span></div><input id="pegSpacing" type="range" min="25" max="180" step="1" value="40"/><div class="range-ends"><span>25 px</span><span id="pegSpacingMaxLabel">180 px</span></div></div>
+<div class="field"><div class="field-head"><label for="pegSpacingY">Separación vertical (dᵧ)</label><span class="value" id="pegSpacingYValue">41,5 px</span></div><input id="pegSpacingY" type="range" min="20" max="180" step="0.5" value="41.5"/><div class="range-ends"><span>20 px</span><span>180 px</span></div></div>
+<div class="field"><div class="field-head"><label for="rowExpansion">Expansión horizontal por nivel (Δd)</label><span class="value" id="rowExpansionValue">0 px/fila</span></div><input id="rowExpansion" type="range" min="0" max="18" step="0.5" value="0"/><div class="range-ends"><span>0 (sin expansión)</span><span>18 px/fila</span></div><p class="note">En la fila j, la separación es dₓ(j) = dₓ(0) + j·Δd. El ancho de los compartimentos se adapta a la última fila.</p></div>
+<div class="field"><div class="field-head"><label for="wallRise">Elevación de paredes inclinadas</label><span class="value" id="wallRiseValue">80 px</span></div><input id="wallRise" type="range" min="0" max="260" step="5" value="80"/><div class="range-ends"><span>0 px</span><span>260 px</span></div><p class="note">Altura del extremo superior de las dos paredes triangulares respecto de la primera fila. Las paredes son físicas y desvían bolitas.</p><p class="note" id="geometryWarning" aria-live="polite"></p></div>
 <div class="field"><div class="field-head"><label for="levels">Niveles de obstáculos</label><span class="value" id="levelsValue">10</span></div><input id="levels" type="range" min="3" max="15" step="1" value="10"/><div class="range-ends"><span>3 niveles</span><span>15 niveles</span></div></div>
           </div>
           <div class="control-group"><h3>Físicos</h3>
 <div class="field"><div class="field-head"><label for="dropHeight">Altura de caída</label><span class="value" id="dropHeightValue">90 px</span></div><input id="dropHeight" type="range" min="30" max="320" step="5" value="90"/><div class="range-ends"><span>30 px</span><span>320 px</span></div><p class="note">Distancia vertical entre el punto medio de lanzamiento y la primera fila de obstáculos. Una mayor altura aumenta la velocidad de impacto.</p></div>
 <div class="field"><div class="field-head"><label for="spawnDx">Dispersión de salida (Δx)</label><span class="value" id="spawnDxValue">±8 px</span></div><input id="spawnDx" type="range" min="0" max="120" step="1" value="8"/><div class="range-ends"><span>0 px (centro)</span><span>±120 px</span></div><p class="note">La posición inicial se elige al azar, uniformemente entre −Δx y +Δx respecto del centro. Modificarla reinicia la corrida.</p></div>
 <div class="field"><div class="field-head"><label for="spawnDy">Dispersión vertical (Δy)</label><span class="value" id="spawnDyValue">±6 px</span></div><input id="spawnDy" type="range" min="0" max="120" step="1" value="6"/><div class="range-ends"><span>0 px</span><span id="spawnDyMaxLabel">±120 px</span></div><p class="note">Cada bolita aparece con una variación de altura uniforme entre −Δy y +Δy. Se limita automáticamente para que ninguna nazca dentro del primer obstáculo.</p></div>
-<div class="field"><div class="field-head"><label for="bounce">Coeficiente de restitución</label><span class="value" id="bounceValue">0,02</span></div><input id="bounce" type="range" min="0" max="0.35" step="0.01" value="0.02"/><div class="range-ends"><span>0 (muy inelástico)</span><span>0,35</span></div><p class="note">Cuánto rebota la bolita al chocar con un obstáculo o una pared. Valores bajos absorben más energía normal.</p></div>
+<div class="field"><div class="field-head"><label for="bounce">Coeficiente de restitución</label><span class="value" id="bounceValue">0,60</span></div><input id="bounce" type="range" min="0" max="0.95" step="0.01" value="0.60"/><div class="range-ends"><span>0 (muy inelástico)</span><span>0,95</span></div><p class="note">Cuánto rebota la bolita al chocar con un obstáculo o una pared. Valores bajos absorben más energía normal.</p></div>
           </div>
           <div class="control-group"><h3>Simulación</h3>
-<div class="field"><div class="field-head"><label for="balls">Cantidad de bolitas</label><input class="number" id="balls" type="number" min="10" max="5000" step="10" value="500" /></div><input id="ballsRange" type="range" min="10" max="5000" step="10" value="500"/><div class="range-ends"><span>10</span><span>5.000</span></div></div>
+<div class="field"><div class="field-head"><label for="balls">Cantidad de bolitas</label><input class="number" id="balls" type="number" min="10" max="5000" step="10" value="2000" /></div><input id="ballsRange" type="range" min="10" max="5000" step="10" value="2000"/><div class="range-ends"><span>10</span><span>5.000</span></div></div>
           <label class="toggle"><input type="checkbox" id="ballCollisions" checked /> Habilitar colisiones entre bolitas</label>
           <p class="note">Activado por defecto. Desactívalo para recuperar el modelo de bolitas independientes.</p>
           <div class="field" style="margin-top:17px"><div class="field-head"><label for="launchDt">Intervalo entre lanzamientos (Δt)</label><span class="value" id="launchDtValue">40 ms</span></div><input id="launchDt" type="range" min="10" max="1000" step="10" value="40"/><div class="range-ends"><span>10 ms</span><span>1.000 ms</span></div><p class="note">Tiempo simulado entre lanzamientos: un Δt menor aumenta la cantidad de bolitas presentes simultáneamente y favorece los choques. Si la salida está ocupada, se espera a que quede espacio.</p></div>
@@ -131,6 +136,10 @@
           <div class="color-control"><label for="trailColor">Color de trayectorias</label><input type="color" id="trailColor" value="#e48aff" aria-label="Seleccionar color de trayectorias" /></div>
           <label class="toggle"><input type="checkbox" id="showChi2" checked /> Mostrar χ²</label>
           <label class="toggle"><input type="checkbox" id="fastMode" /> Modo rápido (sin animación)</label>
+          <label class="toggle"><input type="checkbox" id="showCounters" /> Mostrar líneas de conteo (al finalizar)</label>
+          <div class="sensor-key"><i style="background:#488cde"></i>Menos <i style="background:#73d592"></i>Promedio <i style="background:#ef6767"></i>Más</div>
+          <p class="note">Cada línea horizontal es un detector virtual del primer cruce descendente. Si una bolita pasa fuera de las puertas de una fila, no se cuenta en esa fila. Los detectores no generan choques.</p>
+          <p class="note" id="sensorSummary"></p>
           <p class="note">En modo rápido, los parámetros recalculan automáticamente las trayectorias. Los resultados pueden tardar más con miles de bolitas.</p>
           </div>
           <div class="status"><span class="status-dot" id="statusDot"></span><span id="statusText">Preparado para comenzar</span></div><div class="progress-track"><div class="progress-fill" id="progress"></div></div><p id="engineLabel" class="note" aria-live="polite">Motor: integrado (sin conexión)</p>
@@ -140,7 +149,7 @@
       </aside>
     </div>
 
-    <div class="footer">Las colisiones entre bolitas están activadas por defecto; se pueden desactivar para simular cuerpos independientes. Cambiar tamaño, separación, altura, Δx, Δy, niveles, Δt o colisiones reinicia la simulación y sus resultados. El botón superior permite iniciar una nueva corrida en cualquier momento. En modo rápido, cada cambio ejecuta una nueva simulación sin animar las bolitas. El ancho de bins modifica el histograma y el χ². Funciona sin Internet mediante el motor integrado y utiliza Matter.js cuando está disponible.</div>
+    <div class="footer">Las dos paredes inclinadas y las líneas de conteo se ajustan a la geometría. Las líneas son sensores virtuales y no alteran los rebotes. Los colores comparan cada línea con la media de su fila; en una distribución binomial ideal no todas las posiciones de una fila reciben el mismo flujo. El motor integrado funciona sin Internet, mientras Matter.js se usa cuando está disponible.</div>
   </main>
 
   <script>
@@ -173,7 +182,7 @@
         ball.position.y += ny * (penetration + 0.04);
         const normalSpeed = ball.velocity.x * nx + ball.velocity.y * ny;
         if (normalSpeed < 0) {
-          const elasticity = Math.max(0, Math.min(0.35, ball.restitution || 0));
+          const elasticity = Math.max(0, Math.min(0.95, ball.restitution || 0));
           ball.velocity.x -= (1 + elasticity) * normalSpeed * nx;
           ball.velocity.y -= (1 + elasticity) * normalSpeed * ny;
         }
@@ -191,29 +200,34 @@
           const ny = d > 1e-8 ? oy / d : 0;
           bounce(ball, nx, ny, range - d);
         } else {
-          const left = fixed.position.x - fixed.width / 2;
-          const right = fixed.position.x + fixed.width / 2;
-          const top = fixed.position.y - fixed.height / 2;
-          const bottom = fixed.position.y + fixed.height / 2;
-          if (x + r < left || x - r > right || y + r < top || y - r > bottom) return;
-          const nearestX = limit(x, left, right);
-          const nearestY = limit(y, top, bottom);
-          const ox = x - nearestX, oy = y - nearestY;
+          // Un rectángulo estático puede estar girado (paredes triangulares).
+          // Convertimos el centro de la bolita al sistema local del rectángulo.
+          const angle = fixed.angle || 0, c = Math.cos(angle), ss = Math.sin(angle);
+          const wx = x - fixed.position.x, wy = y - fixed.position.y;
+          const lx = wx * c + wy * ss, ly = -wx * ss + wy * c;
+          const left = -fixed.width / 2, right = fixed.width / 2;
+          const top = -fixed.height / 2, bottom = fixed.height / 2;
+          if (lx + r < left || lx - r > right || ly + r < top || ly - r > bottom) return;
+          const nearestX = limit(lx, left, right), nearestY = limit(ly, top, bottom);
+          const ox = lx - nearestX, oy = ly - nearestY;
           const dd = ox * ox + oy * oy;
           if (dd >= r * r) return;
           const d = Math.sqrt(dd);
+          let nx, ny, penetration;
           if (d > 1e-8) {
-            bounce(ball, ox / d, oy / d, r - d);
+            nx = ox / d; ny = oy / d; penetration = r - d;
           } else {
             const faces = [
-              { dist: x - left, nx: -1, ny: 0 },
-              { dist: right - x, nx: 1, ny: 0 },
-              { dist: y - top, nx: 0, ny: -1 },
-              { dist: bottom - y, nx: 0, ny: 1 }
+              { dist: lx - left, nx: -1, ny: 0 },
+              { dist: right - lx, nx: 1, ny: 0 },
+              { dist: ly - top, nx: 0, ny: -1 },
+              { dist: bottom - ly, nx: 0, ny: 1 }
             ];
             faces.sort((a, b) => a.dist - b.dist);
-            bounce(ball, faces[0].nx, faces[0].ny, r + faces[0].dist);
+            nx = faces[0].nx; ny = faces[0].ny; penetration = r + faces[0].dist;
           }
+          bounce(ball, nx * c - ny * ss, nx * ss + ny * c, penetration);
+
         }
       }
       function collideDynamicBodies(world) {
@@ -249,7 +263,7 @@
                 const relativeNormal = (a.velocity.x - b.velocity.x) * nx + (a.velocity.y - b.velocity.y) * ny;
                 if (relativeNormal < 0) {
                   // Todas las bolitas tienen igual masa y radio en esta simulación.
-                  const e = Math.max(0, Math.min(0.35, Math.max(a.restitution || 0, b.restitution || 0)));
+                  const e = Math.max(0, Math.min(0.95, Math.max(a.restitution || 0, b.restitution || 0)));
                   const impulse = -(1 + e) * relativeNormal * 0.5;
                   a.velocity.x += impulse * nx;
                   a.velocity.y += impulse * ny;
@@ -309,12 +323,12 @@
       const STORAGE_KEY = 'galton_saved_params_v1';
 
       let engine = null, n = 10, total = 500;
-      let dx = 64, dy = 46, pegR = 7, ballR = 5, firstY = 128;
+      let dx = 40, dy = 41.5, rowExpansion = 0, lastDx = 40, wallRise = 80, pegR = 4, ballR = 8, firstY = 128;
       let dropHeight = 90, spawnDy = 6;
-      let pegs = [], stationary = [], moving = [], counts = [];
+      let pegs = [], stationary = [], moving = [], counts = [], slopedWalls = [], gateRows = [], gateCounts = [];
       let started = false, paused = false, spawned = 0, received = 0, spawnCredit = 0;
       let ballCollisions = true, launchDtMs = 40;
-      let speed = 1, restitution = 0.02, binWidth = 1, spawnDx = 8, showTheory = true, drawTrails = false;
+      let speed = 1, restitution = 0.60, binWidth = 1, spawnDx = 8, showTheory = true, drawTrails = false, showCounters = false;
       let lastFrame = 0, accumulator = 0;
       let fastMode = false, showChi2 = true, fastDebounce = null;
       let savedPresets = [];
@@ -355,6 +369,9 @@
       function updateGeometryControls() {
         $('pegSpacingMaxLabel').textContent = `${$('pegSpacing').max} px`;
         $('pegSpacingValue').textContent = `${$('pegSpacing').value} px`;
+        $('pegSpacingYValue').textContent = `${Number($('pegSpacingY').value).toLocaleString('es-CL', { maximumFractionDigits: 1 })} px`;
+        $('rowExpansionValue').textContent = `${Number($('rowExpansion').value).toLocaleString('es-CL', { maximumFractionDigits: 1 })} px/fila`;
+        $('wallRiseValue').textContent = `${$('wallRise').value} px`;
         $('ballSizeValue').textContent = `${$('ballSize').value} px`;
         $('pegSizeValue').textContent = `${$('pegSize').value} px`;
         dropHeight = Number($('dropHeight').value);
@@ -369,59 +386,119 @@
         spawnDy = Number($('spawnDy').value);
         $('spawnDyValue').textContent = `±${spawnDy} px`;
       }
+      function spacingAt(row) { return dx + row * rowExpansion; }
       function dimensions() {
         dx = Number($('pegSpacing').value);
-        dy = dx * 0.72;
+        dy = Number($('pegSpacingY').value);
+        rowExpansion = Number($('rowExpansion').value);
+        wallRise = Number($('wallRise').value);
+        lastDx = spacingAt(n - 1);
         ballR = Number($('ballSize').value) / 2;
         pegR = Number($('pegSize').value) / 2;
         firstY = Math.max(128, dropHeight + spawnDy + ballR + 32);
         const lastPegY = firstY + (n - 1) * dy;
-        BIN_TOP = lastPegY + Math.max(76, dx * 0.83);
-        FLOOR_Y = BIN_TOP + Math.max(162, dx * 1.8);
+        BIN_TOP = lastPegY + Math.max(65, dy * 1.15, lastDx * 0.65);
+        FLOOR_Y = BIN_TOP + Math.max(165, lastDx * 2.1);
         fitCamera();
         const freeGap = dx - 2 * (pegR + ballR);
         $('geometryWarning').textContent = freeGap < 0
-          ? 'Atención: el espacio entre obstáculos es menor que el diámetro de las bolitas. Algunas trayectorias podrían quedar bloqueadas.'
-          : freeGap < 5
-            ? 'El paso entre obstáculos es estrecho; pueden producirse más rebotes y retenciones.'
-            : `Paso libre horizontal aproximado: ${freeGap.toFixed(0)} px.`;
+          ? 'Atención: el paso horizontal de la primera fila es menor que el diámetro de las bolitas; pueden bloquearse trayectorias.'
+          : `Paso libre inicial (para centros de bolitas): ${freeGap.toFixed(0)} px. Última separación: ${lastDx.toFixed(1)} px.`;
       }
       function fitCamera() {
-        const worldTop = Math.min(0, firstY - dropHeight - spawnDy - ballR - 18);
-        const worldBottom = FLOOR_Y + 40;
-        const halfWidth = ((n + 1) * dx) / 2 + 40;
+        const worldTop = Math.min(0, firstY - wallRise - ballR - 20, firstY - dropHeight - spawnDy - ballR - 18);
+        const worldBottom = FLOOR_Y + 45;
+        const halfWidth = ((n + 1) * lastDx) / 2 + 54;
         cameraScale = Math.min(1, (W - 72) / (halfWidth * 2), (H - 50) / (worldBottom - worldTop));
         cameraX = CENTER * (1 - cameraScale);
         cameraY = 24 - worldTop * cameraScale;
       }
-      function leftEdge() { return CENTER - ((n + 1) / 2) * dx; }
+      function leftEdge() { return CENTER - ((n + 1) / 2) * lastDx; }
 
       function staticCircle(x, y, r) {
         return Bodies.circle(x, y, r, { isStatic: true, restitution: 0, friction: 0, frictionStatic: 0, collisionFilter: { ...staticFilter } });
       }
-      function staticWall(x, y, width, height) {
-        return Bodies.rectangle(x, y, width, height, { isStatic: true, restitution: 0, friction: 0, frictionStatic: 0, collisionFilter: { ...staticFilter } });
+      function staticWall(x, y, width, height, angle = 0) {
+        return Bodies.rectangle(x, y, width, height, { angle, isStatic: true, restitution: 0, friction: 0, frictionStatic: 0, collisionFilter: { ...staticFilter } });
+      }
+      function angledBarrier(x1, y1, x2, y2, thickness = 8) {
+        const length = Math.hypot(x2 - x1, y2 - y1);
+        return staticWall((x1 + x2) / 2, (y1 + y2) / 2, length, thickness, Math.atan2(y2 - y1, x2 - x1));
+      }
+      function counterPlaneY(row) { return firstY + row * dy + Math.min(dy * 0.46, pegR + ballR + 7); }
+      function setupSensors() {
+        gateRows = []; gateCounts = [];
+        for (let row = 0; row < n; row++) {
+          const spacing = spacingAt(row), y = counterPlaneY(row);
+          const gates = [];
+          for (let col = 0; col <= row; col++) {
+            const pegX = CENTER + (col - row / 2) * spacing;
+            // Cada detector abarca una mitad de la celda de un obstáculo.
+            // Así la línea que se ve coincide con el intervalo real contado.
+            gates.push({ x: pegX - spacing / 4, x1: pegX - spacing / 2, x2: pegX, y, pegX, side: -1, col, row, count: 0 });
+            gates.push({ x: pegX + spacing / 4, x1: pegX, x2: pegX + spacing / 2, y, pegX, side: 1, col, row, count: 0 });
+          }
+          gateRows.push(gates);
+          gateCounts.push(Array(gates.length).fill(0));
+        }
+      }
+      function recordSensorCrossings(body) {
+        if (!body.prev) return;
+        const y0 = body.prev.y, y1 = body.position.y;
+        if (y1 <= y0) return; // Cruce descendente (primero de cada fila).
+        for (let row = 0; row < n; row++) {
+          if (body.crossedRows[row]) continue;
+          const y = counterPlaneY(row);
+          if (y0 > y || y1 < y) continue;
+          const fraction = (y - y0) / (y1 - y0);
+          const atX = body.prev.x + (body.position.x - body.prev.x) * fraction;
+          const spacing = spacingAt(row);
+          const leftGate = CENTER - (row + 1) * spacing / 2;
+          const rightGate = CENTER + (row + 1) * spacing / 2;
+          body.crossedRows[row] = true;
+          if (atX < leftGate || atX >= rightGate) continue;
+          const col = clamp(Math.floor((atX - leftGate) / spacing), 0, row);
+          const pegX = CENTER + (col - row / 2) * spacing;
+          const side = atX < pegX ? 0 : 1;
+          const index = col * 2 + side;
+          gateCounts[row][index]++;
+          gateRows[row][index].count++;
+        }
       }
 
       function createWorld() {
         dimensions();
         engine = Engine.create({ enableSleeping: false, positionIterations: 8, velocityIterations: 8 });
         engine.gravity.x = 0; engine.gravity.y = 1.0; engine.gravity.scale = 0.001;
-        pegs = []; stationary = []; moving = [];
+        pegs = []; stationary = []; moving = []; slopedWalls = [];
+        setupSensors();
         for (let row = 0; row < n; row++) {
+          const spacing = spacingAt(row);
           for (let col = 0; col <= row; col++) {
-            const x = CENTER + (col - row / 2) * dx;
+            const x = CENTER + (col - row / 2) * spacing;
             const y = firstY + row * dy;
-            pegs.push({ x, y });
+            pegs.push({ x, y, row, col });
             stationary.push(staticCircle(x, y, pegR));
           }
         }
         const left = leftEdge();
-        const width = (n + 1) * dx;
-        const wallTop = firstY - 34;
+        const width = (n + 1) * lastDx;
+        const wallBottomY = BIN_TOP - 10;
+        const upperY = firstY - wallRise;
+        const upperOffset = Math.max(spawnDx + ballR + 16, pegR + ballR + 18);
+        for (const side of [-1, 1]) {
+          const x1 = CENTER + side * upperOffset;
+          const x2 = CENTER + side * (width / 2 + 8);
+          const barrier = { x1, y1: upperY, x2, y2: wallBottomY };
+          slopedWalls.push(barrier);
+          stationary.push(angledBarrier(barrier.x1, barrier.y1, barrier.x2, barrier.y2, 8));
+        }
+        // Paredes verticales solo alrededor de los compartimentos; arriba están
+        // reemplazadas por las paredes oblicuas que dibujan el triángulo.
+        const wallTop = BIN_TOP - 10;
         stationary.push(staticWall(left - 8, (wallTop + FLOOR_Y) / 2, 9, FLOOR_Y - wallTop + 24));
         stationary.push(staticWall(left + width + 8, (wallTop + FLOOR_Y) / 2, 9, FLOOR_Y - wallTop + 24));
-        for (let i = 1; i <= n; i++) stationary.push(staticWall(left + i * dx, (BIN_TOP + FLOOR_Y) / 2 + 5, 5, FLOOR_Y - BIN_TOP + 18));
+        for (let i = 1; i <= n; i++) stationary.push(staticWall(left + i * lastDx, (BIN_TOP + FLOOR_Y) / 2 + 5, 5, FLOOR_Y - BIN_TOP + 18));
         stationary.push(staticWall(CENTER, FLOOR_Y + 11, width + 36, 18));
         Composite.add(engine.world, stationary);
       }
@@ -443,13 +520,14 @@
           density: 0.001, collisionFilter: { category: BALL, mask: STATIC | (ballCollisions ? BALL : 0) }
         });
         body.prev = { x, y };
+        body.crossedRows = Array(n).fill(false);
         Body.setVelocity(body, { x: isMatter ? rnd(-0.07, 0.07) : rnd(-2, 2), y: 0 });
         Composite.add(engine.world, body);
         moving.push(body);
         spawned++;
         return true;
       }
-      function indexFor(x) { return clamp(Math.floor((x - leftEdge()) / dx), 0, n); }
+      function indexFor(x) { return clamp(Math.floor((x - leftEdge()) / lastDx), 0, n); }
 
       function drawTrailSegment(body) {
         if (!body.prev) return;
@@ -483,6 +561,7 @@
         Engine.update(engine, STEP_MS);
         for (let i = moving.length - 1; i >= 0; i--) {
           const b = moving[i];
+          recordSensorCrossings(b);
           drawTrailSegment(b);
           if (b.position.y >= FLOOR_Y - ballR - 1 || b.position.y > H + 1200) {
             counts[indexFor(b.position.x)]++;
@@ -636,7 +715,9 @@
       function getCurrentParams() {
         return {
           balls: Number($('balls').value), levels: Number($('levels').value), ballSize: Number($('ballSize').value), pegSize: Number($('pegSize').value),
-          pegSpacing: Number($('pegSpacing').value), dropHeight: Number($('dropHeight').value), spawnDx: Number($('spawnDx').value), spawnDy: Number($('spawnDy').value),
+          pegSpacing: Number($('pegSpacing').value), pegSpacingY: Number($('pegSpacingY').value),
+          rowExpansion: Number($('rowExpansion').value), wallRise: Number($('wallRise').value),
+          showCounters: $('showCounters').checked, dropHeight: Number($('dropHeight').value), spawnDx: Number($('spawnDx').value), spawnDy: Number($('spawnDy').value),
           binWidth: Number($('binWidth').value), bounce: Number($('bounce').value), speed: Number($('speed').value), theory: $('theory').checked, drawTrails: $('drawTrails').checked, showChi2: $('showChi2').checked, fastMode: $('fastMode').checked, trailColor: $('trailColor').value,
           ballCollisions: $('ballCollisions').checked, launchDt: Number($('launchDt').value)
         };
@@ -644,7 +725,12 @@
       function applyParams(params) {
         $('balls').value = params.balls; $('ballsRange').value = params.balls;
         $('levels').value = params.levels; $('ballSize').value = params.ballSize; $('pegSize').value = params.pegSize;
-        $('pegSpacing').value = params.pegSpacing; $('dropHeight').value = params.dropHeight; $('spawnDx').value = params.spawnDx;
+        $('pegSpacing').value = params.pegSpacing;
+        $('pegSpacingY').value = params.pegSpacingY ?? (Number(params.pegSpacing) * 0.72);
+        $('rowExpansion').value = params.rowExpansion ?? 0;
+        $('wallRise').value = params.wallRise ?? 80;
+        $('showCounters').checked = !!params.showCounters;
+        $('dropHeight').value = params.dropHeight; $('spawnDx').value = params.spawnDx;
         $('spawnDy').value = params.spawnDy; $('binWidth').value = params.binWidth; $('bounce').value = params.bounce;
         $('speed').value = params.speed; $('theory').checked = !!params.theory; $('drawTrails').checked = !!params.drawTrails;
         $('showChi2').checked = params.showChi2 !== false; $('fastMode').checked = !!params.fastMode;
@@ -657,6 +743,7 @@
         restitution = Number($('bounce').value);
         $('bounceValue').textContent = restitution.toFixed(2).replace('.', ',');
         drawTrails = $('drawTrails').checked;
+        showCounters = $('showCounters').checked;
         showChi2 = $('showChi2').checked;
         fastMode = $('fastMode').checked;
         $('chi2Panel').hidden = !showChi2;
@@ -725,6 +812,13 @@
         $('progress').style.width = `${(100 * received / total).toFixed(2)}%`;
         $('statusDot').className = 'status-dot' + (started && !paused ? ' playing' : '');
         $('statusText').textContent = started ? (fastMode ? `Cálculo rápido: ${fmt(received)} / ${fmt(total)}` : (paused ? 'Simulación pausada' : 'Simulación en curso')) : (received >= total ? 'Simulación completada' : 'Preparado para comenzar');
+        $('showCounters').disabled = false;
+        const summary = $('sensorSummary');
+        if (showCounters && !started && received > 0) {
+          const first = gateCounts[0].reduce((sum, x) => sum + x, 0);
+          const last = gateCounts[n - 1].reduce((sum, x) => sum + x, 0);
+          summary.textContent = `Cruces detectados: fila 1, ${fmt(first)}; fila ${n}, ${fmt(last)}. Las bolitas que pasan fuera de una línea no suman en ella.`;
+        } else summary.textContent = '';
         const hasRun = started || spawned > 0;
         $('start').textContent = hasRun ? '↻ Reiniciar y reproducir' : '▶ Iniciar';
         $('start').title = hasRun ? 'Reiniciar desde cero y comenzar de inmediato' : 'Iniciar simulación';
@@ -734,6 +828,33 @@
       }
 
       function rectangle(x, y, w, h, r = 0) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); }
+      function blendRgb(from, to, t) { return from.map((value, i) => Math.round(value + (to[i] - value) * t)); }
+      function gateColor(value, rowMean) {
+        if (!(rowMean > 0)) return 'rgb(113,133,160)';
+        const normalized = clamp((value - rowMean) / Math.max(rowMean, 1), -1, 1);
+        const green = [115, 213, 146];
+        const rgb = normalized < 0 ? blendRgb(green, [72, 140, 222], -normalized) : blendRgb(green, [239, 103, 103], normalized);
+        return `rgb(${rgb.join(',')})`;
+      }
+      function renderGateCounts() {
+        if (!showCounters || started || received === 0) return;
+        ctx.save();
+        ctx.lineCap = 'round';
+        for (const rowGates of gateRows) {
+          const mean = rowGates.reduce((s, gate) => s + gate.count, 0) / rowGates.length;
+          for (const gate of rowGates) {
+            const color = gateColor(gate.count, mean);
+            ctx.strokeStyle = color; ctx.fillStyle = color;
+            ctx.lineWidth = Math.max(2, 3 / Math.max(cameraScale, 0.35));
+            // El largo de la línea es el intervalo horizontal efectivamente contado.
+            ctx.beginPath(); ctx.moveTo(gate.x1 + 1, gate.y); ctx.lineTo(gate.x2 - 1, gate.y); ctx.stroke();
+            ctx.font = `bold ${Math.max(8, 11 / Math.max(cameraScale, 0.4))}px system-ui`;
+            ctx.textAlign = 'center';
+            ctx.fillText(String(gate.count), gate.x, gate.y + 14 / Math.max(cameraScale, 0.4));
+          }
+        }
+        ctx.restore();
+      }
       function render() {
         ctx.clearRect(0, 0, W, H);
         const bg = ctx.createLinearGradient(0, 0, 0, H);
@@ -747,11 +868,14 @@
 
         ctx.save();
         ctx.setTransform(cameraScale, 0, 0, cameraScale, cameraX, cameraY);
-        const left = leftEdge(), totalWidth = (n + 1) * dx;
+        const left = leftEdge(), totalWidth = (n + 1) * lastDx;
         ctx.strokeStyle = '#5e7894'; ctx.lineWidth = 6; ctx.lineCap = 'round';
         ctx.beginPath();
-        ctx.moveTo(left - 8, firstY - 34); ctx.lineTo(left - 8, FLOOR_Y + 5);
-        ctx.moveTo(left + totalWidth + 8, firstY - 34); ctx.lineTo(left + totalWidth + 8, FLOOR_Y + 5);
+        for (const wall of slopedWalls) {
+          ctx.moveTo(wall.x1, wall.y1); ctx.lineTo(wall.x2, wall.y2);
+        }
+        ctx.moveTo(left - 8, BIN_TOP - 10); ctx.lineTo(left - 8, FLOOR_Y + 5);
+        ctx.moveTo(left + totalWidth + 8, BIN_TOP - 10); ctx.lineTo(left + totalWidth + 8, FLOOR_Y + 5);
         ctx.stroke();
 
         const emitY = firstY - dropHeight;
@@ -770,8 +894,9 @@
         for (const peg of pegs) {
           ctx.shadowBlur = 12; ctx.shadowColor = 'rgba(132,173,221,.26)';
           ctx.beginPath(); ctx.arc(peg.x, peg.y, pegR, 0, 2 * Math.PI); ctx.fillStyle = '#b3c9df'; ctx.fill(); ctx.shadowBlur = 0;
-          ctx.beginPath(); ctx.arc(peg.x - 1.7, peg.y - 2, Math.max(1.5, pegR * 0.3), 0, 2 * Math.PI); ctx.fillStyle = '#eef7ff'; ctx.fill();
+          ctx.beginPath(); ctx.arc(peg.x - 1.2, peg.y - 1.5, Math.max(1, pegR * 0.3), 0, 2 * Math.PI); ctx.fillStyle = '#eef7ff'; ctx.fill();
         }
+        renderGateCounts();
 
         const observed = groupBins(counts);
         const expected = groupBins(binomial());
@@ -783,8 +908,8 @@
         for (let g = 0; g < observed.length; g++) {
           const from = g * binWidth;
           const span = Math.min(binWidth, n + 1 - from);
-          const startX = left + from * dx;
-          const width = span * dx;
+          const startX = left + from * lastDx;
+          const width = span * lastDx;
           const height = observed[g] / maxHeight * usableHeight;
           if (height > 0) {
             const grad = ctx.createLinearGradient(0, FLOOR_Y - height, 0, FLOOR_Y);
@@ -800,7 +925,7 @@
 
         ctx.strokeStyle = '#738aa7'; ctx.lineWidth = 2;
         for (let i = 0; i <= n + 1; i++) {
-          const x = left + i * dx;
+          const x = left + i * lastDx;
           ctx.beginPath(); ctx.moveTo(x, BIN_TOP); ctx.lineTo(x, FLOOR_Y + 2); ctx.stroke();
         }
         ctx.beginPath(); ctx.moveTo(left, FLOOR_Y + 2); ctx.lineTo(left + totalWidth, FLOOR_Y + 2); ctx.stroke();
@@ -810,7 +935,7 @@
           for (let g = 0; g < expected.length; g++) {
             const from = g * binWidth;
             const span = Math.min(binWidth, n + 1 - from);
-            const x = left + (from + span / 2) * dx;
+            const x = left + (from + span / 2) * lastDx;
             const y = FLOOR_Y - expected[g] * total / maxHeight * usableHeight;
             if (g === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
           }
@@ -818,7 +943,7 @@
           for (let g = 0; g < expected.length; g++) {
             const from = g * binWidth;
             const span = Math.min(binWidth, n + 1 - from);
-            const x = left + (from + span / 2) * dx;
+            const x = left + (from + span / 2) * lastDx;
             const y = FLOOR_Y - expected[g] * total / maxHeight * usableHeight;
             ctx.beginPath(); ctx.arc(x, y, 3, 0, 2 * Math.PI); ctx.fillStyle = '#ffca72'; ctx.fill();
           }
@@ -883,7 +1008,7 @@
       $('balls').addEventListener('change', () => { $('ballsRange').value = $('balls').value; configure(); });
       $('ballsRange').addEventListener('input', () => { $('balls').value = $('ballsRange').value; configure(); });
       $('levels').addEventListener('input', configure);
-      for (const id of ['ballSize', 'pegSize', 'pegSpacing', 'dropHeight', 'spawnDx', 'spawnDy']) $(id).addEventListener('input', configure);
+      for (const id of ['ballSize', 'pegSize', 'pegSpacing', 'pegSpacingY', 'rowExpansion', 'wallRise', 'dropHeight', 'spawnDx', 'spawnDy']) $(id).addEventListener('input', configure);
       $('binWidth').addEventListener('input', () => { updateBinWidth(); render(); updateNumbers(); });
       $('ballCollisions').addEventListener('change', configure);
       $('launchDt').addEventListener('input', () => {
@@ -915,6 +1040,7 @@
         if (fastMode) scheduleFastRun();
         else { clearTrails(); render(); }
       });
+      $('showCounters').addEventListener('change', () => { showCounters = $('showCounters').checked; render(); });
       $('showChi2').addEventListener('change', () => {
         showChi2 = $('showChi2').checked;
         $('chi2Panel').hidden = !showChi2;
@@ -942,6 +1068,7 @@
       launchDtMs = Number($('launchDt').value);
       $('launchDtValue').textContent = `${launchDtMs} ms`;
       drawTrails = $('drawTrails').checked;
+      showCounters = $('showCounters').checked;
       showChi2 = $('showChi2').checked;
       fastMode = $('fastMode').checked;
       $('chi2Panel').hidden = !showChi2;
